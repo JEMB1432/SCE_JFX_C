@@ -16,7 +16,8 @@
     -fx-border-color: #e8e8e8;
     -fx-border-radius: 12px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 6);
-    -fx-max-width: 420px;
+    -fx-min-width: 550px;
+    -fx-max-width: 750px;
 }
 
 /* Logo */
@@ -28,6 +29,11 @@
     -fx-alignment: center;
     -fx-padding: 8px;
     -fx-margin-bottom: 6px;
+}
+
+.login-icon{
+    -fx-text-fill: #fff;
+    -fx-font-weight: bold;
 }
 
 /* Titles */

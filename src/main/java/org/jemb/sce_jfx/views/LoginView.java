@@ -59,9 +59,11 @@ public class LoginView extends VBox {
         // Logo
         StackPane logo = new StackPane();
         logo.getStyleClass().add("logo");
-        Label iconLabel = new Label("\uD83C\uDF93"); // 🎓
+        //Label iconLabel = new Label("\uD83C\uDF93");
+        Label iconLabel = new Label("SCE");
         iconLabel.setFont(Font.font("System", 26));
         iconLabel.setTextFill(Color.WHITE);
+        iconLabel.getStyleClass().add("login-icon");
         logo.getChildren().add(iconLabel);
 
         Label title = new Label("Bienvenido");
@@ -174,11 +176,11 @@ public class LoginView extends VBox {
         HBox options = new HBox(8);
         options.setAlignment(Pos.CENTER_LEFT);
         rememberMeCheckBox = new CheckBox("Recordarme");
-        Hyperlink forgot = new Hyperlink("¿Olvidaste tu contraseña?");
-        forgot.setOnAction(e -> showAlert("Funcionalidad de recuperación próximamente", "info"));
+//        Hyperlink forgot = new Hyperlink("¿Olvidaste tu contraseña?");
+//        forgot.setOnAction(e -> showAlert("Funcionalidad de recuperación próximamente", "info"));
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        options.getChildren().addAll(rememberMeCheckBox, spacer, forgot);
+        options.getChildren().addAll(rememberMeCheckBox, spacer);
 
         // Login button + progress
         progressIndicator = new ProgressIndicator();
@@ -212,7 +214,7 @@ public class LoginView extends VBox {
         // Assemble form
         form.getChildren().addAll(emailGroup, passwordGroup, passwordErrorLabel, options, loginRow);
 
-        card.getChildren().addAll(header, alertLabel, form, divider, or, register);
+        card.getChildren().addAll(header, alertLabel, form, divider);
         return card;
     }
 
