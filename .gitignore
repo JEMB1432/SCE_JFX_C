@@ -1,0 +1,90 @@
+# ================================
+#   IntelliJ IDEA
+# ================================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Evitar archivos de configuración específicos del usuario
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf/
+
+# ================================
+#   Maven
+# ================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Archivos de compilación
+**/classes/
+**/generated-sources/
+**/generated-test-sources/
+**/maven-status/
+**/maven-archiver/
+
+# Logs de Maven
+mvnw
+mvnw.cmd
+.mvn/
+
+# ================================
+#   Java
+# ================================
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# ================================
+#   JavaFX – Cache y artefactos
+# ================================
+**/javafx-cache/
+**/build/
+
+# ================================
+#   Logs
+# ================================
+logs/
+*.log
+*.out
+
+# ================================
+#   Sistema Operativo
+# ================================
+.DS_Store
+Thumbs.db
+
+# ================================
+#   Configuración sensible
+# ================================
+# Evitar subir credenciales
+*.env
+.env*
+/config/*.properties
+
+# Si usas variables de entorno locales
+**/local.properties
+
+# ================================
+#   Base de datos (si generas backups)
+# ================================
+*.sql
+*.sqlite
+*.db
+
+# ================================
+#   Editor / Utilidades
+# ================================
+.vscode/
+tmp/
+*.tmp
