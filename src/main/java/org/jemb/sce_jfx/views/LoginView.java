@@ -4,6 +4,8 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
@@ -57,14 +59,7 @@ public class LoginView extends VBox {
         card.setAlignment(Pos.TOP_CENTER);
 
         // Logo
-        StackPane logo = new StackPane();
-        logo.getStyleClass().add("logo");
-        //Label iconLabel = new Label("\uD83C\uDF93");
-        Label iconLabel = new Label("SCE");
-        iconLabel.setFont(Font.font("System", 26));
-        iconLabel.setTextFill(Color.WHITE);
-        iconLabel.getStyleClass().add("login-icon");
-        logo.getChildren().add(iconLabel);
+        StackPane logo = createLogo();
 
         Label title = new Label("Bienvenido");
         title.getStyleClass().add("title");
@@ -363,6 +358,42 @@ public class LoginView extends VBox {
         });
 
         new Thread(loginTask, "login-task-thread").start();
+    }
+
+    private StackPane createLogo() {
+        try {
+            // Cargar la imagen
+            Image logoImage = new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/logo.png"));
+
+            // Crear ImageView
+            ImageView logoView = new ImageView(logoImage);
+            logoView.setFitWidth(40);  // Ajustar tamaño
+            logoView.setFitHeight(40);
+            logoView.setPreserveRatio(true);
+
+            // Contenedor del logo
+            StackPane logoContainer = new StackPane(logoView);
+            logoContainer.getStyleClass().add("logo-container");
+            logoContainer.setAlignment(Pos.CENTER);
+
+            return logoContainer;
+
+        } catch (Exception e) {
+            System.err.println("Error cargando logo: " + e.getMessage());
+            // Fallback: texto si la imagen no carga
+            return createFallbackLogo();
+        }
+    }
+
+    private StackPane createFallbackLogo() {
+        StackPane fallbackLogo = new StackPane();
+        fallbackLogo.getStyleClass().add("logo");
+        Label iconLabel = new Label("SCE");
+        iconLabel.setFont(Font.font("System", 26));
+        iconLabel.setTextFill(Color.WHITE);
+        iconLabel.getStyleClass().add("login-icon");
+        fallbackLogo.getChildren().add(iconLabel);
+        return fallbackLogo;
     }
 
     // Exponer servicio (para tests)

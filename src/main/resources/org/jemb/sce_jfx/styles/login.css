@@ -19,18 +19,31 @@
     -fx-min-width: 550px;
     -fx-max-width: 750px;
 }
+.logo-container {
+    -fx-background-color: #2f5856;
+    -fx-background-radius: 10px;
+    -fx-min-width: 58px;
+    -fx-pref-width: 58px;
+    -fx-max-width: 58px;
+    -fx-min-height: 58px;
+    -fx-pref-height: 58px;
+    -fx-max-height: 58px;
+    -fx-alignment: center;
+    -fx-padding: 8px;
+}
 
-/* Logo */
 .logo {
     -fx-background-color: #2f5856;
     -fx-background-radius: 10px;
+    -fx-min-width: 58px;
     -fx-pref-width: 58px;
+    -fx-max-width: 58px;
+    -fx-min-height: 58px;
     -fx-pref-height: 58px;
+    -fx-max-height: 58px;
     -fx-alignment: center;
     -fx-padding: 8px;
-    -fx-margin-bottom: 6px;
 }
-
 .login-icon{
     -fx-text-fill: #fff;
     -fx-font-weight: bold;
