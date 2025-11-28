@@ -46,9 +46,23 @@ public class EnrollmentController {
             throw new IllegalArgumentException("La materia no está activa");
         }
 
-        // Validar semestre
-        if (semester < 1 || semester > 2) {
-            throw new IllegalArgumentException("El semestre debe ser 1 o 2");
+        // Validar que el semestre del estudiante coincida con el semestre disponible de la materia
+        if (student.getSemester() == null) {
+            throw new IllegalArgumentException("El estudiante no tiene un semestre asignado. Por favor, actualice el semestre del estudiante.");
+        }
+
+        if (subject.getSemesterAvailable() != null) {
+            if (student.getSemester() < subject.getSemesterAvailable()) {
+                throw new IllegalArgumentException(
+                    String.format("El estudiante está en el semestre %d, pero la materia '%s' está disponible a partir del semestre %d. " +
+                                 "El estudiante debe estar en el semestre %d o superior para inscribirse en esta materia.",
+                    student.getSemester(), subject.getName(), subject.getSemesterAvailable(), subject.getSemesterAvailable()));
+            }
+        }
+
+        // Validar semestre del período académico
+        if (semester < 1 || semester > 12) {
+            throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
         }
 
         // Validar formato de año académico (ej: 2024-2025)
@@ -105,8 +119,8 @@ public class EnrollmentController {
 
     // Obtener inscripciones por período académico
     public List<Enrollment> getEnrollmentsByPeriod(String academicYear, int semester) {
-        if (semester < 1 || semester > 2) {
-            throw new IllegalArgumentException("El semestre debe ser 1 o 2");
+        if (semester < 1 || semester > 12) {
+            throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
         }
         return enrollmentDAO.findByAcademicYearAndSemester(academicYear, semester);
     }
@@ -134,9 +148,14 @@ public class EnrollmentController {
             throw new IllegalArgumentException("La materia no existe");
         }
 
+        // Validar formato de año académico
+        if (enrollment.getAcademicYear() != null && !isValidAcademicYear(enrollment.getAcademicYear())) {
+            throw new IllegalArgumentException("Formato de año académico inválido. Use el formato: YYYY-YYYY");
+        }
+
         // Validar semestre
-        if (enrollment.getSemester() < 1 || enrollment.getSemester() > 2) {
-            throw new IllegalArgumentException("El semestre debe ser 1 o 2");
+        if (enrollment.getSemester() < 1 || enrollment.getSemester() > 12) {
+            throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
         }
 
         Enrollment updated = enrollmentDAO.update(enrollment);

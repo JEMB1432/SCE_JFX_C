@@ -1,0 +1,78 @@
+/* ==================== BOTONES ==================== */
+.primary-button {
+    -fx-background-color: #2f5856;
+    -fx-text-fill: white;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 16;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-pref-height: 44px;
+}
+
+.primary-button:hover {
+    -fx-background-color: #264644;
+}
+
+.cancel-button{
+    -fx-background-color: #646464;
+    -fx-text-fill: white;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 16;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-pref-height: 44px;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #3f3f3f;
+}
+
+.secondary-button {
+    -fx-background-color: #1C7C54;
+    -fx-text-fill: white;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 16;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-pref-height: 44px;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #156a46;
+}
+
+.edit-button {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.edit-button:hover {
+    -fx-background-color: #059669;
+}
+
+.delete-button {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.delete-button:hover {
+    -fx-background-color: #b91c1c;
+}
+
+.action-button {
+    -fx-background-radius: 6px;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}

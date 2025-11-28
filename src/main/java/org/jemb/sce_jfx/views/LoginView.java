@@ -37,8 +37,13 @@ public class LoginView extends VBox {
     }
 
     private void initializeUI() {
-        // Cargar CSS (colocar login.css en resources/org/jemb/sce_jfx/styles/)
-        getStylesheets().add(getClass().getResource("/org/jemb/sce_jfx/styles/login.css").toExternalForm());
+        // Cargar CSS necesarios según componentes usados
+        getStylesheets().addAll(
+            getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
+            getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
+            getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
+            getClass().getResource("/org/jemb/sce_jfx/styles/views/login.css").toExternalForm()
+        );
         getStyleClass().add("login-root");
 
         setAlignment(Pos.CENTER);
@@ -175,7 +180,7 @@ public class LoginView extends VBox {
 //        forgot.setOnAction(e -> showAlert("Funcionalidad de recuperación próximamente", "info"));
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        options.getChildren().addAll(rememberMeCheckBox, spacer);
+        options.getChildren().addAll( spacer);
 
         // Login button + progress
         progressIndicator = new ProgressIndicator();
@@ -203,7 +208,7 @@ public class LoginView extends VBox {
         register.setAlignment(Pos.CENTER);
         Label noAcc = new Label("¿No tienes una cuenta? ");
         Hyperlink regLink = new Hyperlink("Regístrate");
-        regLink.setOnAction(e -> showAlert("Funcionalidad de registro próximamente", "info"));
+        regLink.setOnAction(e -> showAlert("", "info"));
         register.getChildren().addAll(noAcc, regLink);
 
         // Assemble form

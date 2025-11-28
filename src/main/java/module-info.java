@@ -14,4 +14,5 @@ module org.jemb.sce_jfx {
     exports org.jemb.sce_jfx.views;
     exports org.jemb.sce_jfx.services;
     exports org.jemb.sce_jfx.models;
+    exports org.jemb.sce_jfx.utils;
 }

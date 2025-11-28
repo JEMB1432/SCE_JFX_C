@@ -1,0 +1,157 @@
+/* ==================== CAMPOS DE FORMULARIO ==================== */
+.form-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #111827;
+    -fx-font-weight: 600;
+}
+
+.form-field {
+    -fx-background-color: white;
+    -fx-border-color: #e6e6e6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 12;
+    -fx-font-size: 14px;
+    -fx-pref-height: 44px;
+}
+
+.form-field:focused {
+    -fx-border-color: #2f5856;
+    -fx-effect: dropshadow(gaussian, rgba(47, 88, 86, 0.08), 8, 0, 0, 2);
+}
+
+.form-field.error {
+    -fx-border-color: #dc2626;
+    -fx-border-width: 1px;
+}
+
+.error-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #dc2626;
+    -fx-padding: 4 0 0 0;
+}
+
+/* ==================== BÚSQUEDA ==================== */
+.search-field {
+    -fx-pref-width: 450;
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #e6e6e6;
+    -fx-border-width: 1px;
+    -fx-padding: 10 12;
+    -fx-font-size: 14px;
+    -fx-pref-height: 44px;
+}
+
+.search-field:focused {
+    -fx-border-color: #2f5856;
+    -fx-effect: dropshadow(gaussian, rgba(47, 88, 86, 0.08), 8, 0, 0, 2);
+}
+
+.search-field:hover {
+    -fx-border-color: #c5c5c5;
+}
+
+/* ==================== COMBO BOX ==================== */
+.combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e6e6e6;
+    -fx-border-radius: 8px;
+    -fx-pref-height: 44px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #2f5856;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 10 12;
+}
+
+/* ==================== FILTROS ==================== */
+.filter-combo {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #e6e6e6;
+    -fx-border-width: 1px;
+    -fx-pref-height: 44px;
+    -fx-font-size: 14px;
+}
+
+.filter-combo:hover {
+    -fx-border-color: #c5c5c5;
+}
+
+.filter-combo .list-cell {
+    -fx-padding: 8 12;
+}
+
+/* ==================== DATE PICKER ==================== */
+.date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e6e6e6;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-pref-height: 44px;
+}
+
+.date-picker:focused {
+    -fx-border-color: #2f5856;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 8px 8px 0;
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: rgba(47, 88, 86, 0.05);
+}
+
+/* ==================== SPINNER ==================== */
+.spinner {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e6e6e6;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-pref-height: 44px;
+}
+
+.spinner:focused {
+    -fx-border-color: #2f5856;
+    -fx-effect: dropshadow(gaussian, rgba(47, 88, 86, 0.08), 8, 0, 0, 2);
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 10 12;
+    -fx-font-size: 14px;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4;
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: rgba(47, 88, 86, 0.1);
+}
+
+.spinner .increment-arrow-button .increment-arrow,
+.spinner .decrement-arrow-button .decrement-arrow {
+    -fx-background-color: #6b7280;
+    -fx-padding: 2;
+}
+
+.spinner .increment-arrow-button:hover .increment-arrow,
+.spinner .decrement-arrow-button:hover .decrement-arrow {
+    -fx-background-color: #2f5856;
+}

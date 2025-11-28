@@ -30,9 +30,7 @@ public class DatabaseConfig {
             config.setUsername(props.getProperty("db.username"));
             config.setPassword(props.getProperty("db.password"));
 
-            // MySQL o MariaDB: elegir uno
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");  
-            // config.setDriverClassName("org.mariadb.jdbc.Driver");
 
             // Configuración del pool
             config.setMaximumPoolSize(10);
@@ -43,12 +41,10 @@ public class DatabaseConfig {
             config.setMaxLifetime(1800000);
             config.setLeakDetectionThreshold(60000);
 
-            // Mejor para MySQL / MariaDB
             config.setConnectionTestQuery("SELECT 1");
 
             dataSource = new HikariDataSource(config);
 
-            // Probar conexión
             try (Connection conn = dataSource.getConnection()) {
                 System.out.println("Conexión a la base de datos establecida correctamente");
             }

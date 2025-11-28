@@ -14,14 +14,15 @@ public class Student {
     private LocalDate dateOfBirth;
     private String address;
     private LocalDate enrollmentDate;
+    private Integer semester; // Semestre actual del estudiante (1-12)
     private String status; // active, inactive, graduated
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Constructores
     public Student() {
         this.id = UUID.randomUUID().toString();
         this.enrollmentDate = LocalDate.now();
+        this.semester = 1; // Semestre por defecto
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.status = "active";
@@ -62,6 +63,9 @@ public class Student {
 
     public LocalDate getEnrollmentDate() { return enrollmentDate; }
     public void setEnrollmentDate(LocalDate enrollmentDate) { this.enrollmentDate = enrollmentDate; }
+
+    public Integer getSemester() { return semester; }
+    public void setSemester(Integer semester) { this.semester = semester; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

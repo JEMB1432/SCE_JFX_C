@@ -1,0 +1,139 @@
+/* ==================== SIDEBAR ==================== */
+
+.sidebar {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 2, 0);
+    -fx-padding: 20 0 0 0;
+    -fx-pref-width: 220px; /* Reducir ancho del sidebar */
+    -fx-min-width: 200px;
+    -fx-max-width: 220px;
+    -fx-alignment: top-center;
+}
+
+.logo {
+    -fx-padding: 0 15 15 15; /* Reducir padding */
+    -fx-border-color: #e5e5e5;
+    -fx-border-width: 0 0 1 0;
+    -fx-spacing: 8; /* Reducir espaciado */
+    -fx-alignment: center-left;
+}
+
+.logo-icon {
+    -fx-fill: #305252;
+}
+
+.logo-text {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px; /* Reducir tamaño de fuente */
+    -fx-text-fill: #305252;
+}
+
+/* ==================== USER INFO ==================== */
+
+.user-info {
+    -fx-padding: 0 15 15 15; /* Reducir padding */
+    -fx-spacing: 8; /* Reducir espaciado */
+    -fx-alignment: center-left;
+}
+
+.user-avatar {
+    -fx-background-color: #e5e5e5;
+    -fx-background-radius: 20;
+}
+
+.user-name {
+    -fx-font-size: 13px; /* Reducir tamaño */
+    -fx-font-weight: 600;
+    -fx-text-fill: #1a1a1a;
+}
+
+.user-role {
+    -fx-font-size: 11px; /* Reducir tamaño */
+    -fx-text-fill: #666666;
+}
+
+/* ==================== MENU ==================== */
+
+.sidebar-menu {
+    -fx-spacing: 3px; /* Reducir espaciado entre botones */
+    -fx-padding: 8px 0; /* Reducir padding */
+}
+
+.menu-button {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-padding: 8 12 8 12; /* Reducir padding interno */
+    -fx-alignment: center-left;
+    -fx-content-display: left;
+    -fx-spacing: 8; /* Reducir espaciado */
+    -fx-font-size: 13px; /* Reducir tamaño de fuente */
+    -fx-text-fill: #1a1a1a;
+    -fx-cursor: hand;
+    -fx-min-width: 200px; /* Reducir ancho mínimo */
+}
+
+.menu-button:hover,
+.menu-button.active {
+    -fx-background-color: rgba(48, 82, 82, 0.1);
+    -fx-text-fill: #305252;
+    -fx-border-color: #305252;
+    -fx-border-width: 0 0 0 3;
+}
+
+.menu-button .icon {
+    -fx-fill: #666666;
+}
+
+.menu-button:hover .icon,
+.menu-button.active .icon {
+    -fx-fill: #305252;
+}
+
+/* ==================== PRIMARY BUTTON ==================== */
+
+.primary-button {
+    -fx-background-color: #305252;
+    -fx-padding: 8;
+    -fx-text-fill: white;
+    -fx-pref-width: 180px;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.primary-button:hover {
+    -fx-background-color: #264040;
+}
+
+.logout-container {
+    -fx-padding: 8; /* Reducir padding */
+    -fx-alignment: bottom-center;
+}
+
+/* ==================== CORRECCIONES ADICIONALES ==================== */
+
+.button-content {
+    -fx-alignment: center-left;
+    -fx-spacing: 8; /* Reducir espaciado */
+}
+
+.menu-label {
+    -fx-text-fill: inherit;
+    -fx-font-size: 13px; /* Reducir tamaño */
+    -fx-font-weight: normal;
+}
+
+.icon-container {
+    -fx-alignment: center;
+    -fx-pref-width: 24px;
+    -fx-pref-height: 24px;
+}
+
+.svg-path {
+    -fx-fill: #666666;
+}
+
+.menu-button:hover .svg-path,
+.menu-button.active .svg-path {
+    -fx-fill: #305252;
+}

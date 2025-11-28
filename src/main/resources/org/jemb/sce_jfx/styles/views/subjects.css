@@ -1,0 +1,10 @@
+/* Importar estilos comunes */
+@import "../common/base.css";
+@import "../common/tables.css";
+@import "../components/badges.css";
+
+/* ==================== VISTA DE MATERIAS ==================== */
+.subjects-view {
+    -fx-background-color: #f5f5f5;
+    -fx-padding: 30;
+}

@@ -79,6 +79,13 @@ public class StudentController {
             throw new IllegalArgumentException("El email ya está en uso: " + student.getEmail());
         }
 
+        // Validar semestre si se especifica
+        if (student.getSemester() != null) {
+            if (student.getSemester() < 1 || student.getSemester() > 12) {
+                throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
+            }
+        }
+
         student.setUpdatedAt(java.time.LocalDateTime.now());
         Student updated = studentDAO.update(student);
         

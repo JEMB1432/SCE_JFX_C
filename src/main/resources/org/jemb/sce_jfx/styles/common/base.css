@@ -1,0 +1,59 @@
+/* ==================== VARIABLES GLOBALES ==================== */
+.root {
+    /* Paleta principal */
+    -fx-primary-color: #2f5856;
+    -fx-primary-hover: #264644;
+    -fx-secondary-color: #1C7C54;
+    -fx-accent-color: #43efff;
+    -fx-dark-color: #111827;
+    -fx-light-color: #f5f5f5;
+    -fx-danger-color: #dc2626;
+    -fx-warning-color: #ff9800;
+    -fx-success-color: #10b981;
+
+    /* Colores de fondo */
+    -fx-bg-white: white;
+    -fx-bg-gray: #f9f9f9;
+    -fx-bg-light: #f5f5f5;
+
+    /* Colores de borde */
+    -fx-border-light: #e6e6e6;
+    -fx-border-medium: #d3d3d3;
+    -fx-border-dark: #c5c5c5;
+
+    /* Colores de texto */
+    -fx-text-dark: #111827;
+    -fx-text-medium: #6b7280;
+    -fx-text-light: #9ca3af;
+}
+
+/* ==================== TÍTULOS ==================== */
+.view-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-dark;
+}
+
+.view-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-text-medium;
+}
+
+/* ==================== SCROLL BAR ==================== */
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: -fx-border-medium;
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: -fx-border-dark;
+}
