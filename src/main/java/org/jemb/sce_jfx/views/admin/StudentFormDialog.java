@@ -26,7 +26,6 @@ public class StudentFormDialog extends Dialog<Student> {
     private TextField emailField;
     private TextField phoneField;
     private DatePicker dateOfBirthPicker;
-    private ComboBox<Integer> semesterCombo;
     private TextArea addressArea;
     private ComboBox<String> statusCombo;
 
@@ -36,7 +35,6 @@ public class StudentFormDialog extends Dialog<Student> {
     private Label emailError;
     private Label phoneError;
     private Label dateOfBirthError;
-    private Label semesterError;
 
     public StudentFormDialog(Student student) {
         this.studentController = new StudentController();
@@ -127,16 +125,11 @@ public class StudentFormDialog extends Dialog<Student> {
                 phoneError = createErrorLabel());
         formGrid.add(phoneSection, 1, 2);
 
-        VBox semesterSection = createLabeledField("Semestre *",
-                createSemesterCombo(),
-                semesterError = createErrorLabel());
-        formGrid.add(semesterSection, 0, 3);
-
         if (isEditMode) {
             VBox statusSection = createLabeledField("Estado",
                     createStatusCombo(),
                     createErrorLabel());
-            formGrid.add(statusSection, 1, 3);
+            formGrid.add(statusSection, 0, 3);
         }
 
         VBox addressSection = new VBox(6);
@@ -151,7 +144,7 @@ public class StudentFormDialog extends Dialog<Student> {
 
         addressSection.getChildren().addAll(addressLabel, addressArea);
 
-        int addressRow = isEditMode ? 4 : 4;
+        int addressRow = isEditMode ? 4 : 3;
         formGrid.add(addressSection, 0, addressRow, 2, 1); // Ocupa 2 columnas
 
         if (isEditMode) {
@@ -201,17 +194,6 @@ public class StudentFormDialog extends Dialog<Student> {
         return picker;
     }
 
-    private ComboBox<Integer> createSemesterCombo() {
-        semesterCombo = new ComboBox<>();
-        semesterCombo.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-        semesterCombo.setValue(1);
-        semesterCombo.setPromptText("Seleccione semestre");
-        semesterCombo.getStyleClass().add("form-field");
-        semesterCombo.setPrefHeight(35);
-        semesterCombo.setMaxWidth(Double.MAX_VALUE);
-        return semesterCombo;
-    }
-
     private ComboBox<String> createStatusCombo() {
         statusCombo = new ComboBox<>();
         statusCombo.getItems().addAll("active", "inactive", "graduated");
@@ -255,10 +237,6 @@ public class StudentFormDialog extends Dialog<Student> {
 
         dateOfBirthPicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateDateOfBirth();
-        });
-
-        semesterCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            validateSemester();
         });
     }
 
@@ -374,22 +352,6 @@ public class StudentFormDialog extends Dialog<Student> {
         return true;
     }
 
-    private boolean validateSemester() {
-        if (semesterCombo.getValue() == null) {
-            showError(semesterCombo, semesterError, "Debe seleccionar un semestre");
-            return false;
-        }
-
-        Integer semester = semesterCombo.getValue();
-        if (semester < 1 || semester > 12) {
-            showError(semesterCombo, semesterError, "El semestre debe estar entre 1 y 12");
-            return false;
-        }
-
-        clearError(semesterCombo, semesterError);
-        return true;
-    }
-
     private boolean validateAll() {
         boolean valid = true;
 
@@ -399,7 +361,6 @@ public class StudentFormDialog extends Dialog<Student> {
         valid &= validateEmail();
         valid &= validatePhone();
         valid &= validateDateOfBirth();
-        valid &= validateSemester();
 
         return valid;
     }
@@ -459,7 +420,6 @@ public class StudentFormDialog extends Dialog<Student> {
                         student.setEmail(emailField.getText().trim());
                         student.setPhone(phoneField.getText().trim());
                         student.setDateOfBirth(dateOfBirthPicker.getValue());
-                        student.setSemester(semesterCombo.getValue());
                         student.setAddress(addressArea.getText().trim());
                         student.setStatus(statusCombo.getValue());
 
@@ -491,11 +451,10 @@ public class StudentFormDialog extends Dialog<Student> {
                         if (!FormValidator.isEmpty(addressArea.getText())) {
                             student.setAddress(addressArea.getText().trim());
                         }
-                        student.setSemester(semesterCombo.getValue());
 
                         // Actualizar con campos opcionales
                         if (student.getPhone() != null || student.getDateOfBirth() != null
-                                || student.getAddress() != null || student.getSemester() != null) {
+                                || student.getAddress() != null) {
                             student = studentController.updateStudent(student);
                         }
 
@@ -547,10 +506,6 @@ public class StudentFormDialog extends Dialog<Student> {
 
             if (existingStudent.getAddress() != null) {
                 addressArea.setText(existingStudent.getAddress());
-            }
-
-            if (existingStudent.getSemester() != null) {
-                semesterCombo.setValue(existingStudent.getSemester());
             }
 
             if (statusCombo != null && existingStudent.getStatus() != null) {

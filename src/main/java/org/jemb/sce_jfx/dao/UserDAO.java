@@ -17,7 +17,7 @@ public class UserDAO implements GenericDAO<User, String> {
     public Optional<User> findById(String id) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -34,8 +34,8 @@ public class UserDAO implements GenericDAO<User, String> {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM " + TABLE_NAME + " ORDER BY created_at DESC";
         try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 users.add(mapResultSetToUser(rs));
             }
@@ -47,10 +47,11 @@ public class UserDAO implements GenericDAO<User, String> {
 
     @Override
     public User save(User user) {
-        String sql = "INSERT INTO " + TABLE_NAME + " (id, email, password_hash, role, first_name, last_name, is_active, created_at) " +
+        String sql = "INSERT INTO " + TABLE_NAME
+                + " (id, email, password_hash, role, first_name, last_name, is_active, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getId());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPasswordHash());
@@ -69,9 +70,10 @@ public class UserDAO implements GenericDAO<User, String> {
 
     @Override
     public User update(User user) {
-        String sql = "UPDATE " + TABLE_NAME + " SET email = ?, role = ?, first_name = ?, last_name = ?, is_active = ?, last_login = ? WHERE id = ?";
+        String sql = "UPDATE " + TABLE_NAME
+                + " SET email = ?, role = ?, first_name = ?, last_name = ?, is_active = ?, last_login = ? WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getRole());
             stmt.setString(3, user.getFirstName());
@@ -91,7 +93,7 @@ public class UserDAO implements GenericDAO<User, String> {
     public void delete(String id) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -103,7 +105,7 @@ public class UserDAO implements GenericDAO<User, String> {
     public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE email = ?";
         try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -119,13 +121,30 @@ public class UserDAO implements GenericDAO<User, String> {
     public void updateLastLogin(String userId) {
         String sql = "UPDATE " + TABLE_NAME + " SET last_login = ? WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setTimestamp(1, Timestamp.valueOf(java.time.LocalDateTime.now()));
             stmt.setString(2, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    // Método para buscar usuarios por rol
+    public List<User> findByRole(String role) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE role = ? ORDER BY first_name, last_name";
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, role);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 
     // Mapear ResultSet a User
@@ -151,4 +170,3 @@ public class UserDAO implements GenericDAO<User, String> {
         return user;
     }
 }
-

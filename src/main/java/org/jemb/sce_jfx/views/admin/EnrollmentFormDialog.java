@@ -55,7 +55,8 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         setupValidation();
         setupResult();
 
-        // Cargar materias inicialmente (todas las activas si no hay estudiante seleccionado)
+        // Cargar materias inicialmente (todas las activas si no hay estudiante
+        // seleccionado)
         updateSubjectCombo();
 
         if (isEditMode) {
@@ -262,7 +263,8 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
     private ComboBox<Integer> createSemesterCombo() {
         semesterCombo = new ComboBox<>();
-        semesterCombo.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+        // Permitir semestres flexibles (ajustado según necesidades de la institución)
+        semesterCombo.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         semesterCombo.setPromptText("Seleccione semestre");
         semesterCombo.getStyleClass().add("form-field");
         semesterCombo.setPrefHeight(35);
@@ -300,33 +302,14 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
     private void updateSubjectCombo() {
         subjectCombo.getItems().clear();
-        
-        Student selectedStudent = studentCombo.getValue();
-        List<Subject> availableSubjects;
-        
-        if (selectedStudent != null && selectedStudent.getSemester() != null) {
-            // Filtrar materias según el semestre del estudiante
-            Integer studentSemester = selectedStudent.getSemester();
-            availableSubjects = subjectController.getAllSubjects().stream()
-                    .filter(Subject::isActive)
-                    .filter(subject -> {
-                        // Si la materia no tiene semestre disponible, se muestra
-                        if (subject.getSemesterAvailable() == null) {
-                            return true;
-                        }
-                        // Solo mostrar materias disponibles para el semestre del estudiante o anteriores
-                        return studentSemester >= subject.getSemesterAvailable();
-                    })
-                    .collect(Collectors.toList());
-        } else {
-            // Si no hay estudiante seleccionado o no tiene semestre, mostrar todas las materias activas
-            availableSubjects = subjectController.getAllSubjects().stream()
-                    .filter(Subject::isActive)
-                    .collect(Collectors.toList());
-        }
-        
+
+        // Mostrar todas las materias activas
+        List<Subject> availableSubjects = subjectController.getAllSubjects().stream()
+                .filter(Subject::isActive)
+                .collect(Collectors.toList());
+
         subjectCombo.getItems().addAll(availableSubjects);
-        
+
         // Si solo hay una materia disponible, seleccionarla automáticamente
         if (availableSubjects.size() == 1) {
             subjectCombo.setValue(availableSubjects.get(0));
@@ -336,9 +319,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
     private void setupValidation() {
         studentCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateStudent();
-            // Actualizar materias disponibles cuando cambia el estudiante
             updateSubjectCombo();
-            // Limpiar selección de materia si cambia el estudiante
             subjectCombo.setValue(null);
         });
 
@@ -416,8 +397,8 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         }
 
         Integer semester = semesterCombo.getValue();
-        if (semester < 1 || semester > 12) {
-            showError(semesterCombo, semesterError, "El semestre debe estar entre 1 y 12");
+        if (semester < 1) {
+            showError(semesterCombo, semesterError, "El semestre debe ser mayor a 0");
             return false;
         }
 
@@ -473,8 +454,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                 getDialogPane().getButtonTypes().stream()
                         .filter(buttonType -> buttonType.getButtonData() == ButtonBar.ButtonData.OK_DONE)
                         .findFirst()
-                        .orElse(null)
-        );
+                        .orElse(null));
 
         if (saveButton != null) {
             saveButton.addEventFilter(ActionEvent.ACTION, event -> {
@@ -519,8 +499,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                                 studentCombo.getValue().getId(),
                                 subjectCombo.getValue().getId(),
                                 academicYearField.getText().trim(),
-                                semesterCombo.getValue()
-                        );
+                                semesterCombo.getValue());
 
                         // Actualizar fecha de inscripción si es diferente a la actual
                         LocalDate selectedDate = enrollmentDatePicker.getValue();

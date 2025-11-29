@@ -29,7 +29,7 @@ public class EnrollmentController {
         if (studentOpt.isEmpty()) {
             throw new IllegalArgumentException("El estudiante no existe");
         }
-        
+
         Student student = studentOpt.get();
         if (!student.isActive()) {
             throw new IllegalArgumentException("El estudiante no está activo");
@@ -40,29 +40,15 @@ public class EnrollmentController {
         if (subjectOpt.isEmpty()) {
             throw new IllegalArgumentException("La materia no existe");
         }
-        
+
         Subject subject = subjectOpt.get();
         if (!subject.isActive()) {
             throw new IllegalArgumentException("La materia no está activa");
         }
 
-        // Validar que el semestre del estudiante coincida con el semestre disponible de la materia
-        if (student.getSemester() == null) {
-            throw new IllegalArgumentException("El estudiante no tiene un semestre asignado. Por favor, actualice el semestre del estudiante.");
-        }
-
-        if (subject.getSemesterAvailable() != null) {
-            if (student.getSemester() < subject.getSemesterAvailable()) {
-                throw new IllegalArgumentException(
-                    String.format("El estudiante está en el semestre %d, pero la materia '%s' está disponible a partir del semestre %d. " +
-                                 "El estudiante debe estar en el semestre %d o superior para inscribirse en esta materia.",
-                    student.getSemester(), subject.getName(), subject.getSemesterAvailable(), subject.getSemesterAvailable()));
-            }
-        }
-
         // Validar semestre del período académico
-        if (semester < 1 || semester > 12) {
-            throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
+        if (semester < 1) {
+            throw new IllegalArgumentException("El semestre debe ser mayor a 0");
         }
 
         // Validar formato de año académico (ej: 2024-2025)
@@ -72,8 +58,7 @@ public class EnrollmentController {
 
         // Verificar si ya está inscrito
         Optional<Enrollment> existing = enrollmentDAO.findByStudentAndSubjectAndPeriod(
-            studentId, subjectId, academicYear, semester
-        );
+                studentId, subjectId, academicYear, semester);
         if (existing.isPresent()) {
             throw new IllegalArgumentException("El estudiante ya está inscrito en esta materia para este período");
         }
@@ -83,11 +68,11 @@ public class EnrollmentController {
         enrollment.setStatus("enrolled");
 
         Enrollment saved = enrollmentDAO.save(enrollment);
-        
+
         if (saved == null) {
             throw new RuntimeException("Error al inscribir al estudiante");
         }
-        
+
         return saved;
     }
 
@@ -119,8 +104,8 @@ public class EnrollmentController {
 
     // Obtener inscripciones por período académico
     public List<Enrollment> getEnrollmentsByPeriod(String academicYear, int semester) {
-        if (semester < 1 || semester > 12) {
-            throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
+        if (semester < 1) {
+            throw new IllegalArgumentException("El semestre debe ser mayor a 0");
         }
         return enrollmentDAO.findByAcademicYearAndSemester(academicYear, semester);
     }
@@ -138,6 +123,8 @@ public class EnrollmentController {
             throw new IllegalArgumentException("La inscripción no existe");
         }
 
+        Enrollment existing = existingOpt.get();
+
         // Validar estudiante si cambió
         if (!studentDAO.existsById(enrollment.getStudentId())) {
             throw new IllegalArgumentException("El estudiante no existe");
@@ -150,20 +137,40 @@ public class EnrollmentController {
 
         // Validar formato de año académico
         if (enrollment.getAcademicYear() != null && !isValidAcademicYear(enrollment.getAcademicYear())) {
-            throw new IllegalArgumentException("Formato de año académico inválido. Use el formato: YYYY-YYYY");
+            throw new IllegalArgumentException(
+                    "Formato de año académico inválido. Use el formato: YYYY-YYYY con años consecutivos");
         }
 
         // Validar semestre
-        if (enrollment.getSemester() < 1 || enrollment.getSemester() > 12) {
-            throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
+        if (enrollment.getSemester() < 1) {
+            throw new IllegalArgumentException("El semestre debe ser mayor a 0");
+        }
+
+        // Verificar duplicados si cambió el período o estudiante/materia
+        boolean periodChanged = !enrollment.getAcademicYear().equals(existing.getAcademicYear()) ||
+                enrollment.getSemester() != existing.getSemester();
+        boolean entitiesChanged = !enrollment.getStudentId().equals(existing.getStudentId()) ||
+                !enrollment.getSubjectId().equals(existing.getSubjectId());
+
+        if (periodChanged || entitiesChanged) {
+            Optional<Enrollment> duplicate = enrollmentDAO.findByStudentAndSubjectAndPeriod(
+                    enrollment.getStudentId(),
+                    enrollment.getSubjectId(),
+                    enrollment.getAcademicYear(),
+                    enrollment.getSemester());
+
+            if (duplicate.isPresent() && !duplicate.get().getId().equals(enrollment.getId())) {
+                throw new IllegalArgumentException(
+                        "Ya existe otra inscripción para este estudiante en esta materia y período");
+            }
         }
 
         Enrollment updated = enrollmentDAO.update(enrollment);
-        
+
         if (updated == null) {
             throw new RuntimeException("Error al actualizar la inscripción");
         }
-        
+
         return updated;
     }
 
@@ -180,7 +187,7 @@ public class EnrollmentController {
 
         Enrollment enrollment = enrollmentOpt.get();
         enrollment.setStatus(status);
-        
+
         return updateEnrollment(enrollment);
     }
 
@@ -199,7 +206,7 @@ public class EnrollmentController {
         if (!enrollmentDAO.findById(id).isPresent()) {
             throw new IllegalArgumentException("La inscripción no existe");
         }
-        
+
         enrollmentDAO.delete(id);
     }
 
@@ -208,15 +215,27 @@ public class EnrollmentController {
         if (academicYear == null || academicYear.trim().isEmpty()) {
             return false;
         }
+
         // Formato: YYYY-YYYY
-        return academicYear.matches("\\d{4}-\\d{4}");
+        if (!academicYear.matches("\\d{4}-\\d{4}")) {
+            return false;
+        }
+
+        // Validar que los años sean consecutivos
+        String[] years = academicYear.split("-");
+        try {
+            int year1 = Integer.parseInt(years[0]);
+            int year2 = Integer.parseInt(years[1]);
+            return year2 == year1 + 1;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     // Validar estado
     private boolean isValidStatus(String status) {
-        return status != null && (status.equals("enrolled") || 
-                                  status.equals("completed") || 
-                                  status.equals("dropped"));
+        return status != null && (status.equals("enrolled") ||
+                status.equals("completed") ||
+                status.equals("dropped"));
     }
 }
-

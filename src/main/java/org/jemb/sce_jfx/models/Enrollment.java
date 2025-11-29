@@ -1,4 +1,5 @@
 package org.jemb.sce_jfx.models;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -8,7 +9,7 @@ public class Enrollment {
     private String studentId;
     private String subjectId;
     private String academicYear; // Formato: 2024-2025
-    private int semester; // 1 o 2
+    private int semester;
     private LocalDate enrollmentDate;
     private String status; // enrolled, completed, dropped
     private LocalDateTime createdAt;
@@ -34,35 +35,85 @@ public class Enrollment {
     }
 
     // Getters y Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getStudentId() { return studentId; }
-    public void setStudentId(String studentId) { this.studentId = studentId; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getSubjectId() { return subjectId; }
-    public void setSubjectId(String subjectId) { this.subjectId = subjectId; }
+    public String getStudentId() {
+        return studentId;
+    }
 
-    public String getAcademicYear() { return academicYear; }
-    public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
 
-    public int getSemester() { return semester; }
-    public void setSemester(int semester) { this.semester = semester; }
+    public String getSubjectId() {
+        return subjectId;
+    }
 
-    public LocalDate getEnrollmentDate() { return enrollmentDate; }
-    public void setEnrollmentDate(LocalDate enrollmentDate) { this.enrollmentDate = enrollmentDate; }
+    public void setSubjectId(String subjectId) {
+        this.subjectId = subjectId;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getAcademicYear() {
+        return academicYear;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setAcademicYear(String academicYear) {
+        this.academicYear = academicYear;
+    }
 
-    public Student getStudent() { return student; }
-    public void setStudent(Student student) { this.student = student; }
+    public int getSemester() {
+        return semester;
+    }
 
-    public Subject getSubject() { return subject; }
-    public void setSubject(Subject subject) { this.subject = subject; }
+    public void setSemester(int semester) {
+        this.semester = semester;
+    }
+
+    public LocalDate getEnrollmentDate() {
+        return enrollmentDate;
+    }
+
+    public void setEnrollmentDate(LocalDate enrollmentDate) {
+        this.enrollmentDate = enrollmentDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 
     // Métodos utilitarios
     public boolean isEnrolled() {

@@ -71,7 +71,8 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
 
     @Override
     public Enrollment save(Enrollment enrollment) {
-        String sql = "INSERT INTO " + TABLE_NAME + " (id, student_id, subject_id, academic_year, semester, enrollment_date, status, created_at) " +
+        String sql = "INSERT INTO " + TABLE_NAME
+                + " (id, student_id, subject_id, academic_year, semester, enrollment_date, status, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = null;
@@ -107,7 +108,8 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
 
     @Override
     public Enrollment update(Enrollment enrollment) {
-        String sql = "UPDATE " + TABLE_NAME + " SET student_id = ?, subject_id = ?, academic_year = ?, semester = ?, enrollment_date = ?, status = ? WHERE id = ?";
+        String sql = "UPDATE " + TABLE_NAME
+                + " SET student_id = ?, subject_id = ?, academic_year = ?, semester = ?, enrollment_date = ?, status = ? WHERE id = ?";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -218,7 +220,8 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
 
     public List<Enrollment> findByAcademicYearAndSemester(String academicYear, int semester) {
         List<Enrollment> enrollments = new ArrayList<>();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE academic_year = ? AND semester = ? ORDER BY enrollment_date DESC";
+        String sql = "SELECT * FROM " + TABLE_NAME
+                + " WHERE academic_year = ? AND semester = ? ORDER BY enrollment_date DESC";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -244,8 +247,10 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
         return enrollments;
     }
 
-    public Optional<Enrollment> findByStudentAndSubjectAndPeriod(String studentId, String subjectId, String academicYear, int semester) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE student_id = ? AND subject_id = ? AND academic_year = ? AND semester = ?";
+    public Optional<Enrollment> findByStudentAndSubjectAndPeriod(String studentId, String subjectId,
+            String academicYear, int semester) {
+        String sql = "SELECT * FROM " + TABLE_NAME
+                + " WHERE student_id = ? AND subject_id = ? AND academic_year = ? AND semester = ?";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -300,6 +305,62 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
         return enrollments;
     }
 
+    public List<Enrollment> findByTeacherId(String teacherId) {
+        List<Enrollment> enrollments = new ArrayList<>();
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE teacher_id = ? ORDER BY academic_year DESC, semester DESC";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseConfig.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, teacherId);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                enrollments.add(mapResultSetToEnrollment(rs, true));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding enrollments by teacher ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            DatabaseUtils.closeQuietly(rs, stmt, conn);
+        }
+
+        return enrollments;
+    }
+
+    public List<Enrollment> findByTeacherAndSubject(String teacherId, String subjectId) {
+        List<Enrollment> enrollments = new ArrayList<>();
+        String sql = "SELECT * FROM " + TABLE_NAME
+                + " WHERE teacher_id = ? AND subject_id = ? AND status = 'enrolled' ORDER BY enrollment_date DESC";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseConfig.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, teacherId);
+            stmt.setString(2, subjectId);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                enrollments.add(mapResultSetToEnrollment(rs, true));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding enrollments by teacher and subject: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            DatabaseUtils.closeQuietly(rs, stmt, conn);
+        }
+
+        return enrollments;
+    }
+
     // Mapeo de ResultSet a Enrollment
     private Enrollment mapResultSetToEnrollment(ResultSet rs, boolean loadRelations) throws SQLException {
         Enrollment enrollment = new Enrollment();
@@ -308,6 +369,7 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
         enrollment.setSubjectId(rs.getString("subject_id"));
         enrollment.setAcademicYear(rs.getString("academic_year"));
         enrollment.setSemester(rs.getInt("semester"));
+        // Campo teacher_id ignorado - no se usa en la aplicación
         enrollment.setEnrollmentDate(DatabaseUtils.toLocalDate(rs.getDate("enrollment_date")));
         enrollment.setStatus(rs.getString("status"));
         enrollment.setCreatedAt(DatabaseUtils.toLocalDateTime(rs.getTimestamp("created_at")));
@@ -321,4 +383,3 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
         return enrollment;
     }
 }
-

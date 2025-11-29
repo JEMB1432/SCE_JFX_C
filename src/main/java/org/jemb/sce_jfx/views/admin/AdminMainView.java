@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jemb.sce_jfx.App;
 import org.jemb.sce_jfx.utils.UserSession;
+import org.jemb.sce_jfx.views.ProfileView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,17 +30,16 @@ public class AdminMainView extends HBox {
     }
 
     private void initializeViews() {
-        // Crear solo las vistas disponibles
         views.put("Dashboard", new DashboardView());
         views.put("Estudiantes", new StudentsView());
         views.put("Materias", new SubjectsView());
-
-        // Vistas placeholder para las no implementadas
+        views.put("Asignar Materias", new TeacherSubjectsView());
         views.put("Inscripciones", new EnrollmentsView());
+        views.put("Usuarios", new UsersView());
         views.put("Calificaciones", createPlaceholderView("Calificaciones - Próximamente"));
         views.put("Reportes", createPlaceholderView("Reportes - Próximamente"));
         views.put("Configuración", createPlaceholderView("Configuración - Próximamente"));
-        views.put("Mi Perfil", createPlaceholderView("Mi Perfil - Próximamente"));
+        views.put("Mi Perfil", new ProfileView());
     }
 
     private Node createPlaceholderView(String message) {
@@ -67,9 +67,8 @@ public class AdminMainView extends HBox {
 
     private void applyStyles() {
         getStylesheets().addAll(
-            getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
-            getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm()
-        );
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm());
         contentArea.getStyleClass().add("content-area");
         this.getStyleClass().add("admin-main-view");
     }
