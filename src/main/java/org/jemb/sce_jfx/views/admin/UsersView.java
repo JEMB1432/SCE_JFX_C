@@ -246,7 +246,6 @@ public class UsersView extends VBox {
                 } else {
                     User user = getTableView().getItems().get(getIndex());
 
-                    // No permitir eliminar el usuario actual logueado
                     User currentUser = UserSession.getInstance().getCurrentUser();
                     if (currentUser != null && user.getId().equals(currentUser.getId())) {
                         deleteBtn.setDisable(true);
@@ -292,12 +291,10 @@ public class UsersView extends VBox {
         ObservableList<User> filtered = FXCollections.observableArrayList();
 
         for (User user : masterList) {
-            // Search filter
             boolean matchesSearch = search.isEmpty() ||
                     user.getFullName().toLowerCase().contains(search) ||
                     user.getEmail().toLowerCase().contains(search);
 
-            // Role filter
             boolean matchesRole = roleFilterValue.equals("Todos los roles");
             if (!matchesRole) {
                 switch (roleFilterValue) {
@@ -313,7 +310,6 @@ public class UsersView extends VBox {
                 }
             }
 
-            // Status filter
             boolean matchesStatus = statusFilterValue.equals("Todos") ||
                     (statusFilterValue.equals("Activos") && user.isActive()) ||
                     (statusFilterValue.equals("Inactivos") && !user.isActive());

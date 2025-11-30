@@ -7,6 +7,7 @@ import org.jemb.sce_jfx.config.DatabaseConfig;
 import org.jemb.sce_jfx.models.User;
 import org.jemb.sce_jfx.views.LoginView;
 import org.jemb.sce_jfx.views.admin.AdminMainView;
+import org.jemb.sce_jfx.views.teacher.TeacherMainView;
 
 public class App extends Application {
     @Override
@@ -23,15 +24,12 @@ public class App extends Application {
         loginView.setOnLoginSuccess(() -> {
             User currentUser = loginView.getAuthService().getCurrentUser();
             if (currentUser != null) {
-                // Guardar usuario en sesión
                 org.jemb.sce_jfx.utils.UserSession.getInstance().setCurrentUser(currentUser);
                 
-                // Cargar vista según el rol
                 if (currentUser.isAdmin()) {
                     loadAdminView(stage);
                 } else if (currentUser.isTeacher()) {
-                    // TODO: Cargar vista de profesor
-                    System.out.println("Vista de profesor próximamente");
+                    loadTeacherView(stage);
                 } else {
                     // TODO: Cargar vista de asistente
                     System.out.println("Vista de asistente próximamente");
@@ -39,7 +37,7 @@ public class App extends Application {
             }
         });
 
-        Scene scene = new Scene(loginView, 1200, 800);
+        Scene scene = new Scene(loginView, 800, 600);
         stage.setTitle("Sistema de Control de Estudiantes - Iniciar Sesión");
         stage.setScene(scene);
         stage.setMinWidth(800);
@@ -57,6 +55,14 @@ public class App extends Application {
         Scene adminScene = new Scene(adminView, 1400, 900);
         stage.setScene(adminScene);
         stage.setTitle("Sistema de Control de Estudiantes - Administrador");
+        stage.setMaximized(true);
+    }
+
+    private void loadTeacherView(Stage stage) {
+        TeacherMainView teacherMainView = new TeacherMainView();
+        Scene teacherScene = new Scene(teacherMainView, 1400, 900);
+        stage.setScene(teacherScene);
+        stage.setTitle("Sistema de Control de Estudiantes - Docente");
         stage.setMaximized(true);
     }
 

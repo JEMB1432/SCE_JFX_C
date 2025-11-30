@@ -367,16 +367,13 @@ public class LoginView extends VBox {
 
     private StackPane createLogo() {
         try {
-            // Cargar la imagen
             Image logoImage = new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/logo.png"));
 
-            // Crear ImageView
             ImageView logoView = new ImageView(logoImage);
             logoView.setFitWidth(40);  // Ajustar tamaño
             logoView.setFitHeight(40);
             logoView.setPreserveRatio(true);
 
-            // Contenedor del logo
             StackPane logoContainer = new StackPane(logoView);
             logoContainer.getStyleClass().add("logo-container");
             logoContainer.setAlignment(Pos.CENTER);
@@ -385,7 +382,6 @@ public class LoginView extends VBox {
 
         } catch (Exception e) {
             System.err.println("Error cargando logo: " + e.getMessage());
-            // Fallback: texto si la imagen no carga
             return createFallbackLogo();
         }
     }
@@ -401,7 +397,6 @@ public class LoginView extends VBox {
         return fallbackLogo;
     }
 
-    // Exponer servicio (para tests)
     public AuthService getAuthService() {
         return authService;
     }

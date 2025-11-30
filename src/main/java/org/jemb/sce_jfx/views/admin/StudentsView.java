@@ -13,6 +13,7 @@ import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.StudentController;
 import org.jemb.sce_jfx.models.Student;
+import org.jemb.sce_jfx.views.dialogs.StudentPerformanceDialog;
 
 import java.time.format.DateTimeFormatter;
 
@@ -34,12 +35,11 @@ public class StudentsView extends VBox {
     // ====================== CONSTRUCTOR ======================
     public StudentsView() {
         getStylesheets().addAll(
-            getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
-            getClass().getResource("/org/jemb/sce_jfx/styles/common/tables.css").toExternalForm(),
-            getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
-            getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
-            getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm()
-        );
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/tables.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm());
 
         studentController = new StudentController();
 
@@ -53,15 +53,13 @@ public class StudentsView extends VBox {
         content.getChildren().addAll(
                 createHeader(),
                 createSearchAndFilters(),
-                createTableWithPagination()
-        );
+                createTableWithPagination());
 
         getChildren().add(content);
 
         loadStudents();
     }
     // =========================================================
-
 
     private VBox createHeader() {
         Label title = new Label("Estudiantes");
@@ -115,7 +113,8 @@ public class StudentsView extends VBox {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) setText(null);
+                if (empty)
+                    setText(null);
                 else {
                     int currentPage = pagination.getCurrentPageIndex();
                     int index = getIndex();
@@ -132,8 +131,7 @@ public class StudentsView extends VBox {
         // Nombre
         TableColumn<Student, String> nameCol = new TableColumn<>("NOMBRE");
         nameCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
-                c.getValue().getFullName()
-        ));
+                c.getValue().getFullName()));
 
         // Email
         TableColumn<Student, String> emailCol = new TableColumn<>("EMAIL");
@@ -156,8 +154,7 @@ public class StudentsView extends VBox {
             Student s = c.getValue();
             if (s.getEnrollmentDate() != null) {
                 return new javafx.beans.property.SimpleStringProperty(
-                        s.getEnrollmentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                );
+                        s.getEnrollmentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             }
             return new javafx.beans.property.SimpleStringProperty("-");
         });
@@ -172,10 +169,13 @@ public class StudentsView extends VBox {
 
             private final Button editBtn = new Button("Editar");
             private final Button deleteBtn = new Button("Eliminar");
+            private final Button chartBtn = new Button("📊");
 
             {
                 editBtn.getStyleClass().add("edit-button");
                 deleteBtn.getStyleClass().add("delete-button");
+                chartBtn.getStyleClass().add("chart-button");
+                chartBtn.setTooltip(new Tooltip("Ver gráficos de rendimiento"));
 
                 editBtn.setOnAction(e -> {
                     Student student = getTableView().getItems().get(getIndex());
@@ -186,14 +186,20 @@ public class StudentsView extends VBox {
                     Student student = getTableView().getItems().get(getIndex());
                     showDeleteConfirmation(student);
                 });
+
+                chartBtn.setOnAction(e -> {
+                    Student student = getTableView().getItems().get(getIndex());
+                    showPerformanceCharts(student);
+                });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) setGraphic(null);
+                if (empty)
+                    setGraphic(null);
                 else {
-                    HBox buttons = new HBox(8, editBtn, deleteBtn);
+                    HBox buttons = new HBox(8, chartBtn, editBtn, deleteBtn);
                     buttons.setAlignment(Pos.CENTER);
                     setGraphic(buttons);
                 }
@@ -201,8 +207,7 @@ public class StudentsView extends VBox {
         });
 
         studentsTable.getColumns().addAll(
-                indexCol, codeCol, nameCol, emailCol, phoneCol, enrollmentCol, statusCol, actionsCol
-        );
+                indexCol, codeCol, nameCol, emailCol, phoneCol, enrollmentCol, statusCol, actionsCol);
 
         paginationInfo = new Label();
 
@@ -216,7 +221,6 @@ public class StudentsView extends VBox {
         return tableContainer;
     }
 
-
     private void loadStudents() {
         masterStudentsList.setAll(studentController.getAllStudents());
         filterAndPaginate();
@@ -229,19 +233,18 @@ public class StudentsView extends VBox {
         ObservableList<Student> filtered = FXCollections.observableArrayList();
 
         for (Student s : masterStudentsList) {
-            boolean matchesSearch =
-                    search.isEmpty() ||
-                            s.getFullName().toLowerCase().contains(search) ||
-                            s.getStudentCode().toLowerCase().contains(search) ||
-                            (s.getEmail() != null && s.getEmail().toLowerCase().contains(search));
+            boolean matchesSearch = search.isEmpty() ||
+                    s.getFullName().toLowerCase().contains(search) ||
+                    s.getStudentCode().toLowerCase().contains(search) ||
+                    (s.getEmail() != null && s.getEmail().toLowerCase().contains(search));
 
-            boolean matchesStatus =
-                    filter.equals("Todos") ||
-                            (filter.equals("Activos") && s.isActive()) ||
-                            (filter.equals("Inactivos") && s.getStatus().equals("inactive")) ||
-                            (filter.equals("Graduados") && s.isGraduated());
+            boolean matchesStatus = filter.equals("Todos") ||
+                    (filter.equals("Activos") && s.isActive()) ||
+                    (filter.equals("Inactivos") && s.getStatus().equals("inactive")) ||
+                    (filter.equals("Graduados") && s.isGraduated());
 
-            if (matchesSearch && matchesStatus) filtered.add(s);
+            if (matchesSearch && matchesStatus)
+                filtered.add(s);
         }
 
         currentDisplayedList.setAll(filtered);
@@ -270,13 +273,11 @@ public class StudentsView extends VBox {
             paginationInfo.setText("No hay estudiantes para mostrar");
         } else {
             studentsTable.setItems(FXCollections.observableArrayList(
-                    currentDisplayedList.subList(from, to)
-            ));
+                    currentDisplayedList.subList(from, to)));
 
             paginationInfo.setText(
                     String.format("Mostrando %d-%d de %d estudiantes",
-                            from + 1, to, currentDisplayedList.size())
-            );
+                            from + 1, to, currentDisplayedList.size()));
         }
     }
 
@@ -311,8 +312,7 @@ public class StudentsView extends VBox {
         alert.setHeaderText("¿Eliminar estudiante?");
         alert.setContentText(
                 "¿Deseas eliminar a " + student.getFullName() +
-                        " (" + student.getStudentCode() + ")?"
-        );
+                        " (" + student.getStudentCode() + ")?");
 
         alert.showAndWait().ifPresent(resp -> {
             if (resp == ButtonType.OK) {
@@ -329,6 +329,11 @@ public class StudentsView extends VBox {
                 }
             }
         });
+    }
+
+    private void showPerformanceCharts(Student student) {
+        StudentPerformanceDialog dialog = new StudentPerformanceDialog(student);
+        dialog.showAndWait();
     }
 
     private void showError(String msg) {

@@ -152,7 +152,7 @@ public class Sidebar extends VBox {
 
         // Crear contenedor para los botones del menú
         VBox menuButtons = new VBox(5, btnDashboard, btnEstudiantes, btnMaterias, btnAsignacionMaterias,
-                btnInscripciones, btnCalificaciones, btnReportes, btnUsuarios, btnConfiguracion, btnProfile);
+                btnInscripciones, btnUsuarios, btnProfile);
         menuButtons.getStyleClass().add("sidebar-menu");
         VBox.setVgrow(menuButtons, Priority.ALWAYS);
 
