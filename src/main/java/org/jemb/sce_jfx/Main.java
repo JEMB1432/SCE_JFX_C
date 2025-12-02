@@ -28,23 +28,10 @@ public class Main {
             DatabaseConfig.initialize();
             testPass("Conexión a la base de datos establecida");
 
-            // Pruebas de BCrypt
-            testBCrypt();
 
             // Pruebas de UserDAO
             testUserDAO();
 
-            // Pruebas de AuthService
-            testAuthService();
-
-            // Pruebas de StudentDAO
-            testStudentDAO();
-
-            // Pruebas de SubjectDAO
-            testSubjectDAO();
-
-            // Resumen final
-            printSummary();
 
         } catch (Exception e) {
             System.err.println("\nERROR CRÍTICO: " + e.getMessage());
@@ -101,15 +88,15 @@ public class Main {
         UserDAO userDAO = new UserDAO();
 
         // Test 1: Crear usuario de prueba
-        String testEmail = "test.user@example.com";
-        String testPassword = "test123";
+        String testEmail = "aaaa@a.com";
+        String testPassword = "admin123";
         String testHash = AuthService.hashPassword(testPassword);
         
         User testUser = new User();
         testUser.setId(java.util.UUID.randomUUID().toString());
         testUser.setEmail(testEmail);
         testUser.setPasswordHash(testHash);
-        testUser.setRole("teacher");
+        testUser.setRole("admin");
         testUser.setFirstName("Test");
         testUser.setLastName("User");
         testUser.setActive(true);
@@ -151,8 +138,8 @@ public class Main {
         testPass("Listar todos los usuarios (" + allUsers.size() + " encontrados)");
 
         // Limpiar
-        userDAO.delete(testUser.getId());
-        testPass("Eliminar usuario de prueba");
+        //userDAO.delete(testUser.getId());
+        //testPass("Eliminar usuario de prueba");
     }
 
     // ==================== PRUEBAS DE AUTHSERVICE ====================

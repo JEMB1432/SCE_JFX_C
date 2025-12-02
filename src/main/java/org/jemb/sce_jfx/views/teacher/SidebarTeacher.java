@@ -22,11 +22,10 @@ public class SidebarTeacher extends VBox {
     private Button btnDashboard;
     private Button btnMaterias;
     private Button btnCalificaciones;
-<<<<<<< Updated upstream
+
     private Button btnReportes;
-=======
     private Button btnGraficas;
->>>>>>> Stashed changes
+
     private Button btnProfile;
 
     private User currentUser;
@@ -120,13 +119,11 @@ public class SidebarTeacher extends VBox {
         btnCalificaciones = crearMenuButton("Calificaciones",
                 "M12.688 4.411h6.625v8.828h4.411L16 22.067l-7.724-8.828h4.411zM0 25.38h32v2.203H0z");
 
-<<<<<<< Updated upstream
         btnReportes = crearMenuButton("Reportes",
                 "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8");
-=======
         btnGraficas = crearMenuButton("Gráficas de Rendimiento",
                 "M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z");
->>>>>>> Stashed changes
+
 
         btnProfile = crearMenuButton("Mi Perfil",
                 "M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0m0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5z");
@@ -138,11 +135,8 @@ public class SidebarTeacher extends VBox {
                 btnDashboard,
                 btnMaterias,
                 btnCalificaciones,
-<<<<<<< Updated upstream
                 btnReportes,
-=======
                 btnGraficas,
->>>>>>> Stashed changes
                 btnProfile);
         menuButtons.getStyleClass().add("sidebar-menu");
         VBox.setVgrow(menuButtons, Priority.ALWAYS);
@@ -221,11 +215,7 @@ public class SidebarTeacher extends VBox {
     }
 
     private void setActiveButton(Button activeButton) {
-<<<<<<< Updated upstream
-        Arrays.asList(btnDashboard, btnMaterias, btnCalificaciones, btnReportes, btnProfile)
-=======
         Arrays.asList(btnDashboard, btnMaterias, btnCalificaciones, btnGraficas, btnProfile)
->>>>>>> Stashed changes
                 .forEach(btn -> btn.getStyleClass().remove("active"));
         activeButton.getStyleClass().add("active");
     }

@@ -7,7 +7,7 @@ public class Grade {
     private String id;
     private String enrollmentId;
     private String evaluationTypeId;
-    private Double score; // Puede ser null si no se ha calificado
+    private Double score;
     private String comments;
     private LocalDateTime gradedAt;
     private LocalDateTime createdAt;
