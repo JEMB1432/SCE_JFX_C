@@ -22,6 +22,7 @@ public class SidebarTeacher extends VBox {
     private Button btnDashboard;
     private Button btnMaterias;
     private Button btnCalificaciones;
+    private Button btnReportes;
     private Button btnProfile;
 
     private User currentUser;
@@ -115,6 +116,9 @@ public class SidebarTeacher extends VBox {
         btnCalificaciones = crearMenuButton("Calificaciones",
                 "M12.688 4.411h6.625v8.828h4.411L16 22.067l-7.724-8.828h4.411zM0 25.38h32v2.203H0z");
 
+        btnReportes = crearMenuButton("Reportes",
+                "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8");
+
         btnProfile = crearMenuButton("Mi Perfil",
                 "M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0m0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5z");
 
@@ -125,6 +129,7 @@ public class SidebarTeacher extends VBox {
                 btnDashboard,
                 btnMaterias,
                 btnCalificaciones,
+                btnReportes,
                 btnProfile);
         menuButtons.getStyleClass().add("sidebar-menu");
         VBox.setVgrow(menuButtons, Priority.ALWAYS);
@@ -203,7 +208,7 @@ public class SidebarTeacher extends VBox {
     }
 
     private void setActiveButton(Button activeButton) {
-        Arrays.asList(btnDashboard, btnMaterias, btnCalificaciones, btnProfile)
+        Arrays.asList(btnDashboard, btnMaterias, btnCalificaciones, btnReportes, btnProfile)
                 .forEach(btn -> btn.getStyleClass().remove("active"));
         activeButton.getStyleClass().add("active");
     }

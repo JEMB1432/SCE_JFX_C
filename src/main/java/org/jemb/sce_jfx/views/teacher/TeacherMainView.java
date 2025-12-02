@@ -31,6 +31,7 @@ public class TeacherMainView extends HBox {
         views.put("Dashboard", new TeacherDashboardView());
         views.put("Mis Materias", new MySubjectsView());
         views.put("Calificaciones", new GradesView());
+        views.put("Reportes", new ReportsView());
         views.put("Mi Perfil", new ProfileView());
     }
 

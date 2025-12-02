@@ -8,6 +8,9 @@ module org.jemb.sce_jfx {
     requires java.sql;
     requires com.zaxxer.hikari;
     requires jbcrypt;
+    requires com.itextpdf.kernel;
+    requires com.itextpdf.layout;
+    requires com.itextpdf.io;
 
     opens org.jemb.sce_jfx to javafx.fxml;
     exports org.jemb.sce_jfx;
