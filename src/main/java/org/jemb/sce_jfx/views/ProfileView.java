@@ -108,8 +108,7 @@ public class ProfileView extends VBox {
         container.getStyleClass().add("avatar-container");
         container.setPrefWidth(250);
 
-        // Usar placeholder image
-        String imageUrl = "/org/jemb/sce_jfx/images/profilePlaceholder.png";
+        String imageUrl = "/org/jemb/sce_jfx/icons/user.png";
         Image image;
         try {
             image = new Image(getClass().getResourceAsStream(imageUrl));

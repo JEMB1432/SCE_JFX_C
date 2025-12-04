@@ -7,12 +7,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.StudentController;
 import org.jemb.sce_jfx.models.Student;
+import org.jemb.sce_jfx.models.Subject;
 import org.jemb.sce_jfx.views.dialogs.StudentPerformanceDialog;
 
 import java.time.format.DateTimeFormatter;
@@ -28,11 +31,9 @@ public class StudentsView extends VBox {
     private Pagination pagination;
     private Label paginationInfo;
 
-    // Listas para paginación
     private ObservableList<Student> masterStudentsList = FXCollections.observableArrayList();
     private ObservableList<Student> currentDisplayedList = FXCollections.observableArrayList();
 
-    // ====================== CONSTRUCTOR ======================
     public StudentsView() {
         getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
@@ -47,7 +48,7 @@ public class StudentsView extends VBox {
         setSpacing(20);
 
         pagination = new Pagination();
-        pagination.setPageFactory(pageIndex -> null); // Se usa manualmente
+        pagination.setPageFactory(pageIndex -> null);
 
         VBox content = new VBox(20);
         content.getChildren().addAll(
@@ -59,7 +60,6 @@ public class StudentsView extends VBox {
 
         loadStudents();
     }
-    // =========================================================
 
     private VBox createHeader() {
         Label title = new Label("Estudiantes");
@@ -94,6 +94,7 @@ public class StudentsView extends VBox {
         statusFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterAndPaginate());
 
         Button newStudentBtn = new Button("+ Nuevo Estudiante");
+        newStudentBtn.setTooltip(new Tooltip("Agregar estudiante"));
         newStudentBtn.getStyleClass().add("primary-button");
         newStudentBtn.setOnAction(e -> showNewStudentDialog());
 
@@ -107,7 +108,6 @@ public class StudentsView extends VBox {
         studentsTable = new TableView<>();
         studentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Columna índice
         TableColumn<Student, Void> indexCol = new TableColumn<>("#");
         indexCol.setCellFactory(column -> new TableCell<Student, Void>() {
             @Override
@@ -124,31 +124,30 @@ public class StudentsView extends VBox {
         });
         indexCol.setPrefWidth(50);
 
-        // Código
-        TableColumn<Student, String> codeCol = new TableColumn<>("CÓDIGO");
+        TableColumn<Student, String> codeCol = new TableColumn<>("MATRICULA");
         codeCol.setCellValueFactory(new PropertyValueFactory<>("studentCode"));
 
-        // Nombre
         TableColumn<Student, String> nameCol = new TableColumn<>("NOMBRE");
         nameCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 c.getValue().getFullName()));
 
-        // Email
         TableColumn<Student, String> emailCol = new TableColumn<>("EMAIL");
         emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // Teléfono
         TableColumn<Student, String> phoneCol = new TableColumn<>("TELÉFONO");
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
         phoneCol.setCellFactory(column -> new TableCell<Student, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null || item.trim().isEmpty() ? "-" : item);
+                if (empty || item == null || item.isEmpty()) {
+                    setText(null);
+                }else {
+                    setText(item);
+                }
             }
         });
 
-        // Fecha inscripción
         TableColumn<Student, String> enrollmentCol = new TableColumn<>("FECHA INSCRIPCIÓN");
         enrollmentCol.setCellValueFactory(c -> {
             Student s = c.getValue();
@@ -159,38 +158,73 @@ public class StudentsView extends VBox {
             return new javafx.beans.property.SimpleStringProperty("-");
         });
 
-        // Estado
         TableColumn<Student, String> statusCol = new TableColumn<>("ESTADO");
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        statusCol.setCellFactory(column -> new TableCell<Student, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Label statusLabel = new Label(item.equals("active") ? "Activo" : "Inactivo");
+                    statusLabel.getStyleClass().add(item.equals("active") ? "status-active" : "status-inactive");
+                    setGraphic(statusLabel);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        statusCol.setPrefWidth(100);
 
-        // Acciones
         TableColumn<Student, Void> actionsCol = new TableColumn<>("ACCIONES");
         actionsCol.setCellFactory(column -> new TableCell<Student, Void>() {
 
-            private final Button editBtn = new Button("Editar");
-            private final Button deleteBtn = new Button("Eliminar");
-            private final Button chartBtn = new Button("📊");
+            private final Button editBtn;
+            private final Button deleteBtn;
+            private final Button chartBtn;
 
             {
-                editBtn.getStyleClass().add("edit-button");
-                deleteBtn.getStyleClass().add("delete-button");
+                ImageView iconStat = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/stats.png"))
+                );
+                iconStat.setFitWidth(16);
+                iconStat.setFitHeight(16);
+                chartBtn = new Button("", iconStat);
                 chartBtn.getStyleClass().add("chart-button");
                 chartBtn.setTooltip(new Tooltip("Ver gráficos de rendimiento"));
+                chartBtn.setOnAction(e -> {
+                    Student student = getTableView().getItems().get(getIndex());
+                    showPerformanceCharts(student);
+                });
 
+                ImageView iconEdit = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/edit.png"))
+                );
+                iconEdit.setFitWidth(16);
+                iconEdit.setFitHeight(16);
+                editBtn = new Button("", iconEdit);
+                editBtn.getStyleClass().add("edit-button");
+                editBtn.setTooltip(new Tooltip("Editar estudiante"));
                 editBtn.setOnAction(e -> {
                     Student student = getTableView().getItems().get(getIndex());
                     showEditStudentDialog(student);
                 });
 
+                ImageView iconDelete = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/delete.png"))
+                );
+                iconDelete.setFitWidth(16);
+                iconDelete.setFitHeight(16);
+                deleteBtn = new Button("", iconDelete);
+                deleteBtn.getStyleClass().add("delete-button");
+                deleteBtn.setTooltip(new Tooltip("Eliminar estudiante"));
                 deleteBtn.setOnAction(e -> {
                     Student student = getTableView().getItems().get(getIndex());
                     showDeleteConfirmation(student);
                 });
 
-                chartBtn.setOnAction(e -> {
-                    Student student = getTableView().getItems().get(getIndex());
-                    showPerformanceCharts(student);
-                });
+                setAlignment(Pos.CENTER);
             }
 
             @Override
@@ -208,7 +242,6 @@ public class StudentsView extends VBox {
 
         studentsTable.getColumns().addAll(
                 indexCol, codeCol, nameCol, emailCol, phoneCol, enrollmentCol, statusCol, actionsCol);
-
         paginationInfo = new Label();
 
         pagination.currentPageIndexProperty().addListener((obs, oldVal, newVal) -> {

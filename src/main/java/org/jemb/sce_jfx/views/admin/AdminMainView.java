@@ -27,6 +27,12 @@ public class AdminMainView extends HBox {
         initializeViews();
         setupLayout();
         applyStyles();
+
+        setMaxWidth(Double.MAX_VALUE);
+        setMaxHeight(Double.MAX_VALUE);
+
+        contentArea.setMaxWidth(Double.MAX_VALUE);
+        contentArea.setMaxHeight(Double.MAX_VALUE);
     }
 
     private void initializeViews() {
@@ -36,33 +42,21 @@ public class AdminMainView extends HBox {
         views.put("Asignar Materias", new TeacherSubjectsView());
         views.put("Inscripciones", new EnrollmentsView());
         views.put("Usuarios", new UsersView());
-        views.put("Calificaciones", createPlaceholderView("Calificaciones - Próximamente"));
-        views.put("Reportes", createPlaceholderView("Reportes - Próximamente"));
-        views.put("Configuración", createPlaceholderView("Configuración - Próximamente"));
         views.put("Mi Perfil", new ProfileView());
-    }
-
-    private Node createPlaceholderView(String message) {
-        VBox placeholder = new VBox();
-        placeholder.getStyleClass().add("placeholder-view");
-        placeholder.setAlignment(javafx.geometry.Pos.CENTER);
-
-        Label label = new Label(message);
-        label.getStyleClass().add("placeholder-text");
-
-        placeholder.getChildren().add(label);
-        return placeholder;
     }
 
     private void setupLayout() {
         sidebar = new Sidebar();
         sidebar.setViewChangeListener(this::switchView);
 
-        switchToView("Dashboard");
+        switchToView("Estudiantes");
 
         getChildren().addAll(sidebar, contentArea);
         HBox.setHgrow(contentArea, Priority.ALWAYS);
         setSpacing(0);
+
+        contentArea.prefWidthProperty().bind(widthProperty().subtract(sidebar.widthProperty()));
+        contentArea.prefHeightProperty().bind(heightProperty());
     }
 
     private void applyStyles() {
@@ -90,13 +84,7 @@ public class AdminMainView extends HBox {
 
             contentArea.getChildren().add(view);
             currentView = viewName;
-
-            updateSidebarActiveState(viewName);
         }
-    }
-
-    private void updateSidebarActiveState(String viewName) {
-        System.out.println("Vista activa: " + viewName);
     }
 
     private void handleLogout() {
@@ -108,14 +96,9 @@ public class AdminMainView extends HBox {
     }
 
     private void goBackToLogin() {
-
-        try {
+        Platform.runLater(() -> {
             Stage stage = (Stage) this.getScene().getWindow();
-            App app = new App();
-            app.start(stage);
-        } catch (Exception e) {
-            System.err.println("Error al volver al login: " + e.getMessage());
-            e.printStackTrace();
-        }
+            App.showLoginView(stage);
+        });
     }
 }

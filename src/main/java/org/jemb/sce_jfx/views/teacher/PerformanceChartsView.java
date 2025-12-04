@@ -24,7 +24,8 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Vista de gráficas de rendimiento para profesores
- * Muestra estadísticas agregadas de todos los estudiantes de las materias del profesor
+ * Muestra estadísticas agregadas de todos los estudiantes de las materias del
+ * profesor
  */
 public class PerformanceChartsView extends VBox {
 
@@ -174,13 +175,11 @@ public class PerformanceChartsView extends VBox {
 
         try {
             // Obtener estudiantes inscritos en esta materia
-            List<Enrollment> bySubject =
-                    enrollmentController.getEnrollmentsBySubject(selected.getSubjectId());
+            List<Enrollment> bySubject = enrollmentController.getEnrollmentsBySubject(selected.getSubjectId());
 
             List<Enrollment> enrollments = bySubject.stream()
                     .filter(e -> e.getAcademicYear().equals(selected.getAcademicYear()))
                     .filter(e -> e.getSemester() == selected.getSemester()).toList();
-
 
             if (enrollments.isEmpty()) {
                 chartsContainer.getChildren().clear();
@@ -245,8 +244,7 @@ public class PerformanceChartsView extends VBox {
     }
 
     private Label createStatsLabel(TeacherSubject teacherSubject, List<Enrollment> enrollments) {
-        String subjectName = teacherSubject.getSubject() != null ?
-                teacherSubject.getSubject().getName() : "Materia";
+        String subjectName = teacherSubject.getSubject() != null ? teacherSubject.getSubject().getName() : "Materia";
 
         int totalStudents = enrollments.size();
 
@@ -347,16 +345,20 @@ public class PerformanceChartsView extends VBox {
 
         // Categorizar calificaciones
         int excellent = 0; // 90-100
-        int good = 0;      // 80-89
-        int average = 0;   // 70-79
-        int below = 0;     // <70
+        int good = 0; // 80-89
+        int average = 0; // 70-79
+        int below = 0; // <70
 
         for (StudentPerformanceData data : subjectData) {
             double score = data.getScore();
-            if (score >= 90) excellent++;
-            else if (score >= 80) good++;
-            else if (score >= 70) average++;
-            else below++;
+            if (score >= 90)
+                excellent++;
+            else if (score >= 80)
+                good++;
+            else if (score >= 70)
+                average++;
+            else
+                below++;
         }
 
         if (excellent > 0) {

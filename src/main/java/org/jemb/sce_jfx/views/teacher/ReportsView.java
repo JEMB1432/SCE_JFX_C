@@ -198,7 +198,8 @@ public class ReportsView extends VBox {
                 Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                 successAlert.setTitle("Reporte Generado");
                 successAlert.setHeaderText(null);
-                successAlert.setContentText("El reporte se ha generado exitosamente en:\n" + destination.getAbsolutePath());
+                successAlert
+                        .setContentText("El reporte se ha generado exitosamente en:\n" + destination.getAbsolutePath());
                 successAlert.showAndWait();
             } else {
                 // Si no se pudo mover, al menos el archivo está en la ubicación actual
@@ -247,4 +248,3 @@ public class ReportsView extends VBox {
         }
     }
 }
-

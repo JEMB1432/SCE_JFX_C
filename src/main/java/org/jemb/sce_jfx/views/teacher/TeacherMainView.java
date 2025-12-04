@@ -28,7 +28,7 @@ public class TeacherMainView extends HBox {
     }
 
     private void initializeViews() {
-        views.put("Dashboard", new TeacherDashboardView());
+        //views.put("Dashboard", new TeacherDashboardView());
         views.put("Mis Materias", new MySubjectsView());
         views.put("Calificaciones", new GradesView());
         views.put("Reportes", new ReportsView());
@@ -41,7 +41,7 @@ public class TeacherMainView extends HBox {
         sidebar = new SidebarTeacher();
         sidebar.setViewChangeListener(this::switchView);
 
-        switchToView("Dashboard");
+        switchToView("Mis Materias");
 
         getChildren().addAll(sidebar, contentArea);
         HBox.setHgrow(contentArea, Priority.ALWAYS);
@@ -73,13 +73,7 @@ public class TeacherMainView extends HBox {
 
             contentArea.getChildren().add(view);
             currentView = viewName;
-
-            updateSidebarActiveState(viewName);
         }
-    }
-
-    private void updateSidebarActiveState(String viewName) {
-        System.out.println("Vista activa: " + viewName);
     }
 
     private void handleLogout() {

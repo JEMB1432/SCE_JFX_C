@@ -9,11 +9,11 @@ module org.jemb.sce_jfx {
     requires com.zaxxer.hikari;
     requires jbcrypt;
 
-    // iText7 modules - AGREGAR ESTOS
     requires kernel;
     requires layout;
-    requires io; // ← FALTABA ESTE
-    requires commons; // ← Y ESTE TAMBIÉN
+    requires io;
+    requires commons;
+    requires javafx.graphics;
 
     opens org.jemb.sce_jfx to javafx.fxml;
     exports org.jemb.sce_jfx;

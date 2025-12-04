@@ -7,6 +7,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -99,6 +101,7 @@ public class UsersView extends VBox {
         statusFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterAndPaginate());
 
         Button newUserBtn = new Button("+ Nuevo Usuario");
+        newUserBtn.setTooltip(new Tooltip("Agregar Usuario"));
         newUserBtn.getStyleClass().add("primary-button");
         newUserBtn.setOnAction(e -> showNewUserDialog());
 
@@ -112,7 +115,6 @@ public class UsersView extends VBox {
         usersTable = new TableView<>();
         usersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Columna índice
         TableColumn<User, Void> indexCol = new TableColumn<>("#");
         indexCol.setCellFactory(column -> new TableCell<User, Void>() {
             @Override
@@ -129,7 +131,6 @@ public class UsersView extends VBox {
         });
         indexCol.setPrefWidth(50);
 
-        // Nombre completo
         TableColumn<User, String> nameCol = new TableColumn<>("NOMBRE");
         nameCol.setCellValueFactory(cellData -> {
             User user = cellData.getValue();
@@ -137,12 +138,10 @@ public class UsersView extends VBox {
         });
         nameCol.setPrefWidth(200);
 
-        // Email
         TableColumn<User, String> emailCol = new TableColumn<>("EMAIL");
         emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
         emailCol.setPrefWidth(220);
 
-        // Rol
         TableColumn<User, String> roleCol = new TableColumn<>("ROL");
         roleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
         roleCol.setCellFactory(column -> new TableCell<User, String>() {
@@ -180,9 +179,8 @@ public class UsersView extends VBox {
         });
         roleCol.setPrefWidth(120);
 
-        // Estado
         TableColumn<User, Boolean> statusCol = new TableColumn<>("ESTADO");
-        statusCol.setCellValueFactory(new PropertyValueFactory<>("isActive"));
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("active"));
         statusCol.setCellFactory(column -> new TableCell<User, Boolean>() {
             @Override
             protected void updateItem(Boolean item, boolean empty) {
@@ -195,11 +193,11 @@ public class UsersView extends VBox {
                     statusLabel.getStyleClass().add(item ? "status-active" : "status-inactive");
                     setGraphic(statusLabel);
                 }
+                setAlignment(Pos.CENTER);
             }
         });
         statusCol.setPrefWidth(100);
 
-        // Último login
         TableColumn<User, LocalDateTime> lastLoginCol = new TableColumn<>("ÚLTIMO LOGIN");
         lastLoginCol.setCellValueFactory(new PropertyValueFactory<>("lastLogin"));
         lastLoginCol.setCellFactory(column -> new TableCell<User, LocalDateTime>() {
@@ -216,26 +214,40 @@ public class UsersView extends VBox {
         });
         lastLoginCol.setPrefWidth(150);
 
-        // Acciones
         TableColumn<User, Void> actionsCol = new TableColumn<>("ACCIONES");
         actionsCol.setCellFactory(column -> new TableCell<User, Void>() {
 
-            private final Button editBtn = new Button("Editar");
-            private final Button deleteBtn = new Button("Eliminar");
+            private final Button editBtn;
+            private final Button deleteBtn;
 
             {
+                ImageView iconEdit = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/edit.png"))
+                );
+                iconEdit.setFitWidth(16);
+                iconEdit.setFitHeight(16);
+                editBtn = new Button("", iconEdit);
                 editBtn.getStyleClass().add("edit-button");
-                deleteBtn.getStyleClass().add("delete-button");
-
+                editBtn.setTooltip(new Tooltip("Editar materia"));
                 editBtn.setOnAction(e -> {
                     User user = getTableView().getItems().get(getIndex());
                     showEditUserDialog(user);
                 });
 
+                ImageView iconDelete = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/delete.png"))
+                );
+                iconDelete.setFitWidth(16);
+                iconDelete.setFitHeight(16);
+                deleteBtn = new Button("", iconDelete);
+                deleteBtn.getStyleClass().add("delete-button");
+                deleteBtn.setTooltip(new Tooltip("Eliminar materia"));
                 deleteBtn.setOnAction(e -> {
                     User user = getTableView().getItems().get(getIndex());
                     showDeleteConfirmation(user);
                 });
+
+                setAlignment(Pos.CENTER);
             }
 
             @Override

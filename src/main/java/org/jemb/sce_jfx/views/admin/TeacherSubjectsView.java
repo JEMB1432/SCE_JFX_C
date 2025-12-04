@@ -7,11 +7,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.TeacherSubjectController;
+import org.jemb.sce_jfx.models.Subject;
 import org.jemb.sce_jfx.models.TeacherSubject;
 
 public class TeacherSubjectsView extends VBox {
@@ -44,7 +47,7 @@ public class TeacherSubjectsView extends VBox {
         setSpacing(20);
 
         pagination = new Pagination();
-        pagination.setPageFactory(pageIndex -> null); // Se usa manualmente
+        pagination.setPageFactory(pageIndex -> null);
 
         VBox content = new VBox(20);
         content.getChildren().addAll(
@@ -89,15 +92,12 @@ public class TeacherSubjectsView extends VBox {
         statusFilter.setPrefWidth(140);
         statusFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterAndPaginate());
 
-        // Academic Year Filter - dinámico basado en data
         academicYearFilter = new ComboBox<>();
         academicYearFilter.getItems().add("Todos los años");
         academicYearFilter.setValue("Todos los años");
         academicYearFilter.setPrefWidth(150);
 
-        // Listener seguro para academicYearFilter
         academicYearFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
-            // Solo filtrar si el nuevo valor no es null
             if (newVal != null) {
                 PauseTransition pause = new PauseTransition(Duration.millis(300));
                 pause.setOnFinished(event -> filterAndPaginate());
@@ -105,7 +105,6 @@ public class TeacherSubjectsView extends VBox {
             }
         });
 
-        // Semester filter - permite cualquier número
         Label semesterLabel = new Label("Semestre:");
         semesterFilterField = new TextField();
         semesterFilterField.setPromptText("Todos");
@@ -120,6 +119,7 @@ public class TeacherSubjectsView extends VBox {
         semesterBox.setAlignment(Pos.CENTER_LEFT);
 
         Button newAssignmentBtn = new Button("+ Nueva Asignación");
+        newAssignmentBtn.setTooltip(new Tooltip("Asignar una materia a un profesor"));
         newAssignmentBtn.getStyleClass().add("primary-button");
         newAssignmentBtn.setOnAction(e -> showNewAssignmentDialog());
 
@@ -133,7 +133,6 @@ public class TeacherSubjectsView extends VBox {
         assignmentsTable = new TableView<>();
         assignmentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Columna índice
         TableColumn<TeacherSubject, Void> indexCol = new TableColumn<>("#");
         indexCol.setCellFactory(column -> new TableCell<TeacherSubject, Void>() {
             @Override
@@ -150,7 +149,6 @@ public class TeacherSubjectsView extends VBox {
         });
         indexCol.setPrefWidth(50);
 
-        // Profesor
         TableColumn<TeacherSubject, String> teacherCol = new TableColumn<>("PROFESOR");
         teacherCol.setCellValueFactory(cellData -> {
             TeacherSubject ts = cellData.getValue();
@@ -159,9 +157,8 @@ public class TeacherSubjectsView extends VBox {
             }
             return new javafx.beans.property.SimpleStringProperty("N/A");
         });
-        teacherCol.setPrefWidth(200);
+        teacherCol.setPrefWidth(170);
 
-        // Materia
         TableColumn<TeacherSubject, String> subjectCol = new TableColumn<>("MATERIA");
         subjectCol.setCellValueFactory(cellData -> {
             TeacherSubject ts = cellData.getValue();
@@ -171,14 +168,12 @@ public class TeacherSubjectsView extends VBox {
             }
             return new javafx.beans.property.SimpleStringProperty("N/A");
         });
-        subjectCol.setPrefWidth(250);
+        subjectCol.setPrefWidth(220);
 
-        // Año Académico
         TableColumn<TeacherSubject, String> yearCol = new TableColumn<>("AÑO ACADÉMICO");
         yearCol.setCellValueFactory(new PropertyValueFactory<>("academicYear"));
         yearCol.setPrefWidth(130);
 
-        // Semestre
         TableColumn<TeacherSubject, Integer> semesterCol = new TableColumn<>("SEMESTRE");
         semesterCol.setCellValueFactory(new PropertyValueFactory<>("semester"));
         semesterCol.setCellFactory(column -> new TableCell<TeacherSubject, Integer>() {
@@ -194,7 +189,6 @@ public class TeacherSubjectsView extends VBox {
         });
         semesterCol.setPrefWidth(90);
 
-        // Estado
         TableColumn<TeacherSubject, String> statusCol = new TableColumn<>("ESTADO");
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         statusCol.setCellFactory(column -> new TableCell<TeacherSubject, String>() {
@@ -224,30 +218,44 @@ public class TeacherSubjectsView extends VBox {
                     statusLabel.getStyleClass().add(styleClass);
                     setGraphic(statusLabel);
                 }
+                setAlignment(Pos.CENTER);
             }
         });
         statusCol.setPrefWidth(110);
 
-        // Acciones
         TableColumn<TeacherSubject, Void> actionsCol = new TableColumn<>("ACCIONES");
         actionsCol.setCellFactory(column -> new TableCell<TeacherSubject, Void>() {
 
-            private final Button editBtn = new Button("Editar");
-            private final Button deleteBtn = new Button("Eliminar");
-
+            private final Button editBtn;
+            private final Button deleteBtn;
             {
+                ImageView iconEdit = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/edit.png"))
+                );
+                iconEdit.setFitWidth(16);
+                iconEdit.setFitHeight(16);
+                editBtn = new Button("", iconEdit);
                 editBtn.getStyleClass().add("edit-button");
-                deleteBtn.getStyleClass().add("delete-button");
-
+                editBtn.setTooltip(new Tooltip("Editar asignación"));
                 editBtn.setOnAction(e -> {
                     TeacherSubject assignment = getTableView().getItems().get(getIndex());
                     showEditAssignmentDialog(assignment);
                 });
 
+                ImageView iconDelete = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/delete.png"))
+                );
+                iconDelete.setFitWidth(16);
+                iconDelete.setFitHeight(16);
+                deleteBtn = new Button("", iconDelete);
+                deleteBtn.getStyleClass().add("delete-button");
+                deleteBtn.setTooltip(new Tooltip("Eliminar asignación"));
                 deleteBtn.setOnAction(e -> {
                     TeacherSubject assignment = getTableView().getItems().get(getIndex());
                     showDeleteConfirmation(assignment);
                 });
+
+                setAlignment(Pos.CENTER);
             }
 
             @Override
@@ -280,12 +288,10 @@ public class TeacherSubjectsView extends VBox {
     }
 
     private void loadAssignments() {
-        // ✅ Solución 2: Desconectar temporalmente el listener durante la actualización
         academicYearFilter.valueProperty().removeListener((obs, oldVal, newVal) -> filterAndPaginate());
 
         masterList.setAll(controller.getAllAssignments());
 
-        // Poblar años académicos dinámicamente
         academicYearFilter.getItems().clear();
         academicYearFilter.getItems().add("Todos los años");
         masterList.stream()
@@ -296,7 +302,6 @@ public class TeacherSubjectsView extends VBox {
 
         academicYearFilter.setValue("Todos los años");
 
-        // ✅ Solución 2: Reconectar el listener después de la actualización
         academicYearFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 PauseTransition pause = new PauseTransition(Duration.millis(300));
@@ -314,7 +319,6 @@ public class TeacherSubjectsView extends VBox {
         String yearFilterValue = academicYearFilter.getValue();
         String semesterText = semesterFilterField.getText().trim();
 
-        // ✅ Solución 1: Protección contra valores null
         if (yearFilterValue == null) {
             yearFilterValue = "Todos los años";
         }
@@ -325,7 +329,6 @@ public class TeacherSubjectsView extends VBox {
         ObservableList<TeacherSubject> filtered = FXCollections.observableArrayList();
 
         for (TeacherSubject ts : masterList) {
-            // Search filter
             boolean matchesSearch = search.isEmpty();
             if (!matchesSearch && ts.getTeacher() != null) {
                 matchesSearch = ts.getTeacher().getFullName().toLowerCase().contains(search);
@@ -335,17 +338,14 @@ public class TeacherSubjectsView extends VBox {
                         ts.getSubject().getSubjectCode().toLowerCase().contains(search);
             }
 
-            // Status filter
             boolean matchesStatus = statusFilterValue.equals("Todos") ||
                     (statusFilterValue.equals("Activos") && ts.isActive()) ||
                     (statusFilterValue.equals("Inactivos") && "inactive".equals(ts.getStatus())) ||
                     (statusFilterValue.equals("Completados") && ts.isCompleted());
 
-            // Academic Year filter - ✅ Ya protegido contra null
             boolean matchesYear = yearFilterValue.equals("Todos los años") ||
                     yearFilterValue.equals(ts.getAcademicYear());
 
-            // Semester filter
             boolean matchesSemester = true;
             if (!semesterText.isEmpty()) {
                 try {

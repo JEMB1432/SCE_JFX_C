@@ -18,9 +18,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Diálogo para crear y editar inscripciones con diseño compacto en dos columnas
- */
 public class EnrollmentFormDialog extends Dialog<Enrollment> {
     private final EnrollmentController enrollmentController;
     private final StudentController studentController;

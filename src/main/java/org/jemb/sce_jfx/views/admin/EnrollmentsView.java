@@ -7,6 +7,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -46,7 +48,7 @@ public class EnrollmentsView extends VBox {
         setSpacing(20);
 
         pagination = new Pagination();
-        pagination.setPageFactory(pageIndex -> null); // Se usa manualmente
+        pagination.setPageFactory(pageIndex -> null);
 
         VBox content = new VBox(20);
         content.getChildren().addAll(
@@ -92,7 +94,7 @@ public class EnrollmentsView extends VBox {
         statusFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterAndPaginate());
 
         semesterFilter = new ComboBox<>();
-        semesterFilter.getItems().addAll("Todos", "Semestre 1", "Semestre 2, Semestre 3", "Semestre 4", "Semestre 5");
+        semesterFilter.getItems().addAll("Todos", "Semestre 1", "Semestre 2", "Semestre 3", "Semestre 4", "Semestre 5", "Semestre 6", "Semestre 7", "Semestre 8", "Semestre 9", "Semestre 10");
         semesterFilter.setValue("Todos");
         semesterFilter.setPrefWidth(130);
         semesterFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterAndPaginate());
@@ -137,7 +139,6 @@ public class EnrollmentsView extends VBox {
         });
         indexCol.setPrefWidth(50);
 
-        // Estudiante
         TableColumn<Enrollment, String> studentCol = new TableColumn<>("ESTUDIANTE");
         studentCol.setCellValueFactory(c -> {
             Enrollment e = c.getValue();
@@ -149,7 +150,6 @@ public class EnrollmentsView extends VBox {
         });
         studentCol.setPrefWidth(200);
 
-        // Materia
         TableColumn<Enrollment, String> subjectCol = new TableColumn<>("MATERIA");
         subjectCol.setCellValueFactory(c -> {
             Enrollment e = c.getValue();
@@ -161,17 +161,14 @@ public class EnrollmentsView extends VBox {
         });
         subjectCol.setPrefWidth(200);
 
-        // Año Académico
         TableColumn<Enrollment, String> academicYearCol = new TableColumn<>("AÑO ACADÉMICO");
         academicYearCol.setCellValueFactory(new PropertyValueFactory<>("academicYear"));
         academicYearCol.setPrefWidth(120);
 
-        // Semestre
         TableColumn<Enrollment, Integer> semesterCol = new TableColumn<>("SEMESTRE");
         semesterCol.setCellValueFactory(new PropertyValueFactory<>("semester"));
         semesterCol.setPrefWidth(90);
 
-        // Fecha inscripción
         TableColumn<Enrollment, String> dateCol = new TableColumn<>("FECHA INSCRIPCIÓN");
         dateCol.setCellValueFactory(c -> {
             Enrollment e = c.getValue();
@@ -183,7 +180,6 @@ public class EnrollmentsView extends VBox {
         });
         dateCol.setPrefWidth(130);
 
-        // Estado
         TableColumn<Enrollment, String> statusCol = new TableColumn<>("ESTADO");
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         statusCol.setCellFactory(column -> new TableCell<Enrollment, String>() {
@@ -212,30 +208,45 @@ public class EnrollmentsView extends VBox {
                             setStyle("");
                     }
                 }
+                setAlignment(Pos.CENTER);
             }
         });
         statusCol.setPrefWidth(120);
 
-        // Acciones
         TableColumn<Enrollment, Void> actionsCol = new TableColumn<>("ACCIONES");
         actionsCol.setCellFactory(column -> new TableCell<Enrollment, Void>() {
 
-            private final Button editBtn = new Button("Editar");
-            private final Button deleteBtn = new Button("Eliminar");
+            private final Button editBtn;
+            private final Button deleteBtn;
 
             {
+                ImageView iconEdit = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/edit.png"))
+                );
+                iconEdit.setFitWidth(16);
+                iconEdit.setFitHeight(16);
+                editBtn = new Button("", iconEdit);
                 editBtn.getStyleClass().add("edit-button");
-                deleteBtn.getStyleClass().add("delete-button");
-
+                editBtn.setTooltip(new Tooltip("Editar materia"));
                 editBtn.setOnAction(e -> {
                     Enrollment enrollment = getTableView().getItems().get(getIndex());
                     showEditEnrollmentDialog(enrollment);
                 });
 
+                ImageView iconDelete = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/delete.png"))
+                );
+                iconDelete.setFitWidth(16);
+                iconDelete.setFitHeight(16);
+                deleteBtn = new Button("", iconDelete);
+                deleteBtn.getStyleClass().add("delete-button");
+                deleteBtn.setTooltip(new Tooltip("Eliminar materia"));
                 deleteBtn.setOnAction(e -> {
                     Enrollment enrollment = getTableView().getItems().get(getIndex());
                     showDeleteConfirmation(enrollment);
                 });
+
+                setAlignment(Pos.CENTER);
             }
 
             @Override

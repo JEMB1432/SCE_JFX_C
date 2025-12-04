@@ -1,6 +1,7 @@
 package org.jemb.sce_jfx;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.jemb.sce_jfx.config.DatabaseConfig;
@@ -37,11 +38,10 @@ public class App extends Application {
             }
         });
 
-        Scene scene = new Scene(loginView, 800, 600);
+        Scene scene = new Scene(loginView);
         stage.setTitle("Sistema de Control de Estudiantes - Iniciar Sesión");
         stage.setScene(scene);
-        stage.setMinWidth(800);
-        stage.setMinHeight(600);
+        stage.setMaximized(true);
         stage.show();
     }
 
@@ -50,20 +50,51 @@ public class App extends Application {
         DatabaseConfig.close();
     }
 
-    private void loadAdminView(Stage stage) {
+    private static void loadAdminView(Stage stage) {
         AdminMainView adminView = new AdminMainView();
-        Scene adminScene = new Scene(adminView, 1400, 900);
+        Scene adminScene = new Scene(adminView);
         stage.setScene(adminScene);
         stage.setTitle("Sistema de Control de Estudiantes - Administrador");
         stage.setMaximized(true);
     }
 
-    private void loadTeacherView(Stage stage) {
+    private static void loadTeacherView(Stage stage) {
         TeacherMainView teacherMainView = new TeacherMainView();
-        Scene teacherScene = new Scene(teacherMainView, 1400, 900);
+        Scene teacherScene = new Scene(teacherMainView);
         stage.setScene(teacherScene);
         stage.setTitle("Sistema de Control de Estudiantes - Docente");
         stage.setMaximized(true);
+    }
+
+    public static void showLoginView(Stage stage) {
+        org.jemb.sce_jfx.utils.UserSession.getInstance().clear();
+
+        boolean wasMaximized = stage.isMaximized();
+        double width = stage.getWidth();
+        double height = stage.getHeight();
+
+        LoginView loginView = new LoginView();
+
+        loginView.setOnLoginSuccess(() -> {
+            User currentUser = loginView.getAuthService().getCurrentUser();
+            if (currentUser != null) {
+                org.jemb.sce_jfx.utils.UserSession.getInstance().setCurrentUser(currentUser);
+
+                if (currentUser.isAdmin()) {
+                    loadAdminView(stage);
+                } else if (currentUser.isTeacher()) {
+                    loadTeacherView(stage);
+                } else {
+                    System.out.println("Vista de asistente próximamente");
+                }
+            }
+        });
+
+        Scene scene = new Scene(loginView, width, height);
+        stage.setTitle("Sistema de Control de Estudiantes - Iniciar Sesión");
+        stage.setScene(scene);
+
+        stage.setMaximized(wasMaximized);
     }
 
     public static void main(String[] args) {

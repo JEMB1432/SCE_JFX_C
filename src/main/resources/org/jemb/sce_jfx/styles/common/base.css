@@ -1,10 +1,9 @@
-/* ==================== VARIABLES GLOBALES ==================== */
 .root {
     /* Paleta principal */
     -fx-primary-color: #2f5856;
     -fx-primary-hover: #264644;
     -fx-secondary-color: #1C7C54;
-    -fx-accent-color: #43efff;
+    -fx-accent-color: #1C7C54;
     -fx-dark-color: #111827;
     -fx-light-color: #f5f5f5;
     -fx-danger-color: #dc2626;
@@ -27,7 +26,6 @@
     -fx-text-light: #9ca3af;
 }
 
-/* ==================== TÍTULOS ==================== */
 .view-title {
     -fx-font-size: 28px;
     -fx-font-weight: bold;
@@ -39,7 +37,6 @@
     -fx-text-fill: -fx-text-medium;
 }
 
-/* ==================== SCROLL BAR ==================== */
 .scroll-bar:vertical,
 .scroll-bar:horizontal {
     -fx-background-color: transparent;

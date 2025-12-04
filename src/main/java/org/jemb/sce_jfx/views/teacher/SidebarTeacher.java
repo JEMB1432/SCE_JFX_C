@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -19,7 +20,6 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class SidebarTeacher extends VBox {
-    private Button btnDashboard;
     private Button btnMaterias;
     private Button btnCalificaciones;
 
@@ -70,7 +70,9 @@ public class SidebarTeacher extends VBox {
     }
 
     private void createUserInfo() {
-        ImageView userAvatar = new ImageView();
+        ImageView userAvatar = new ImageView(
+                new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/user.png"))
+        );
         userAvatar.setFitWidth(40);
         userAvatar.setFitHeight(40);
         userAvatar.getStyleClass().add("user-avatar");
@@ -110,9 +112,6 @@ public class SidebarTeacher extends VBox {
     }
 
     private void createMenu() {
-        btnDashboard = crearMenuButton("Dashboard",
-                "M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z");
-
         btnMaterias = crearMenuButton("Mis Materias",
                 "M20.75 16.714a1 1 0 0 1-.014.143a.75.75 0 0 1-.736.893H6a1.25 1.25 0 1 0 0 2.5h14a.75.75 0 0 1 0 1.5H6A2.75 2.75 0 0 1 3.25 19V5A2.75 2.75 0 0 1 6 2.25h13.4c.746 0 1.35.604 1.35 1.35zM9 6.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z");
 
@@ -128,11 +127,9 @@ public class SidebarTeacher extends VBox {
         btnProfile = crearMenuButton("Mi Perfil",
                 "M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0m0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5z");
 
-        btnDashboard.getStyleClass().add("active");
+        btnMaterias.getStyleClass().add("active");
 
-        // Crear contenedor para los botones del menú
         VBox menuButtons = new VBox(5,
-                btnDashboard,
                 btnMaterias,
                 btnCalificaciones,
                 btnReportes,
@@ -141,7 +138,6 @@ public class SidebarTeacher extends VBox {
         menuButtons.getStyleClass().add("sidebar-menu");
         VBox.setVgrow(menuButtons, Priority.ALWAYS);
 
-        // Botón de cerrar sesión
         Button logoutButton = new Button("Cerrar Sesión");
         logoutButton.getStyleClass().add("primary-button");
         logoutButton.setOnAction(e -> {
@@ -215,7 +211,7 @@ public class SidebarTeacher extends VBox {
     }
 
     private void setActiveButton(Button activeButton) {
-        Arrays.asList(btnDashboard, btnMaterias, btnCalificaciones, btnGraficas, btnProfile)
+        Arrays.asList( btnMaterias, btnCalificaciones, btnReportes, btnGraficas, btnProfile)
                 .forEach(btn -> btn.getStyleClass().remove("active"));
         activeButton.getStyleClass().add("active");
     }

@@ -37,7 +37,6 @@ public class LoginView extends VBox {
     }
 
     private void initializeUI() {
-        // Cargar CSS necesarios según componentes usados
         getStylesheets().addAll(
             getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
             getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
@@ -63,7 +62,6 @@ public class LoginView extends VBox {
         card.setPadding(new Insets(32));
         card.setAlignment(Pos.TOP_CENTER);
 
-        // Logo
         StackPane logo = createLogo();
 
         Label title = new Label("Bienvenido");
@@ -75,18 +73,15 @@ public class LoginView extends VBox {
         VBox header = new VBox(6, logo, title, subtitle);
         header.setAlignment(Pos.CENTER);
 
-        // Alert (oculto por defecto)
         alertLabel = new Label();
         alertLabel.getStyleClass().addAll("alert");
         alertLabel.setWrapText(true);
         alertLabel.setVisible(false);
         alertLabel.setManaged(false);
 
-        // Form
         VBox form = new VBox(12);
         form.setAlignment(Pos.CENTER_LEFT);
 
-        // Email group
         VBox emailGroup = new VBox(6);
         Label emailLabel = new Label("Correo electrónico");
         emailLabel.getStyleClass().add("label");
@@ -110,7 +105,6 @@ public class LoginView extends VBox {
 
         emailGroup.getChildren().addAll(emailLabel, emailField, emailErrorLabel);
 
-        // Password group
         VBox passwordGroup = new VBox(6);
         Label passwordLabel = new Label("Contraseña");
         passwordLabel.getStyleClass().add("label");
@@ -128,7 +122,6 @@ public class LoginView extends VBox {
         passwordVisibleField.setVisible(false);
         passwordVisibleField.setManaged(false);
 
-        // Toggle password button (simple)
         togglePasswordBtn = new Button("👁");
         togglePasswordBtn.getStyleClass().add("toggle-btn");
         togglePasswordBtn.setOnAction(e -> togglePasswordVisibility());
@@ -142,7 +135,6 @@ public class LoginView extends VBox {
         passwordPane.setCenter(passwordField);
         passwordPane.setRight(toggleBox);
 
-        // When visible, swap center node
         passwordVisibleField.visibleProperty().addListener((obs, oldV, newV) -> {
             passwordVisibleField.setManaged(newV);
         });
@@ -172,17 +164,13 @@ public class LoginView extends VBox {
             hideAlert();
         });
 
-        // Options row
         HBox options = new HBox(8);
         options.setAlignment(Pos.CENTER_LEFT);
         rememberMeCheckBox = new CheckBox("Recordarme");
-//        Hyperlink forgot = new Hyperlink("¿Olvidaste tu contraseña?");
-//        forgot.setOnAction(e -> showAlert("Funcionalidad de recuperación próximamente", "info"));
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         options.getChildren().addAll( spacer);
 
-        // Login button + progress
         progressIndicator = new ProgressIndicator();
         progressIndicator.setVisible(false);
         progressIndicator.setManaged(false);
@@ -198,7 +186,6 @@ public class LoginView extends VBox {
         loginRow.setAlignment(Pos.CENTER);
         HBox.setHgrow(loginButton, Priority.ALWAYS);
 
-        // Divider + register
         HBox divider = new HBox();
         divider.getStyleClass().add("divider");
         Label or = new Label("o");
@@ -211,7 +198,6 @@ public class LoginView extends VBox {
         regLink.setOnAction(e -> showAlert("", "info"));
         register.getChildren().addAll(noAcc, regLink);
 
-        // Assemble form
         form.getChildren().addAll(emailGroup, passwordGroup, passwordErrorLabel, options, loginRow);
 
         card.getChildren().addAll(header, alertLabel, form, divider);
@@ -221,7 +207,6 @@ public class LoginView extends VBox {
     private void togglePasswordVisibility() {
         boolean visible = passwordVisibleField.isVisible();
         if (visible) {
-            // hide visible, show password field
             passwordField.setText(passwordVisibleField.getText());
             passwordVisibleField.setVisible(false);
             passwordVisibleField.setManaged(false);
@@ -229,7 +214,6 @@ public class LoginView extends VBox {
             passwordField.setManaged(true);
             togglePasswordBtn.setText("👁");
         } else {
-            // show visible text
             passwordVisibleField.setText(passwordField.getText());
             passwordVisibleField.setVisible(true);
             passwordVisibleField.setManaged(true);
@@ -328,7 +312,6 @@ public class LoginView extends VBox {
         Task<User> loginTask = new Task<>() {
             @Override
             protected User call() throws Exception {
-                // simula latencia; en producción llamar authService directamente
                 Thread.sleep(300);
                 return authService.login(email, password);
             }
@@ -341,11 +324,6 @@ public class LoginView extends VBox {
 
             if (user != null) {
                 showAlert("Inicio de sesión exitoso. Redirigiendo...", "success");
-
-                // opcional: persistir "remember me"
-                if (rememberMeCheckBox.isSelected()) {
-                    // guardar preferencia (implementar)
-                }
 
                 if (onLoginSuccess != null) onLoginSuccess.run();
             } else {
@@ -370,7 +348,7 @@ public class LoginView extends VBox {
             Image logoImage = new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/logo.png"));
 
             ImageView logoView = new ImageView(logoImage);
-            logoView.setFitWidth(40);  // Ajustar tamaño
+            logoView.setFitWidth(40);
             logoView.setFitHeight(40);
             logoView.setPreserveRatio(true);
 

@@ -22,7 +22,6 @@ public class EnrollmentController {
         this.subjectDAO = new SubjectDAO();
     }
 
-    // Inscribir estudiante en materia
     public Enrollment enrollStudent(String studentId, String subjectId, String academicYear, int semester) {
         // Validar estudiante
         Optional<Student> studentOpt = studentDAO.findById(studentId);

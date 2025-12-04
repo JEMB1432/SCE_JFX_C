@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
@@ -16,7 +17,6 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class Sidebar extends VBox {
-    private Button btnDashboard;
     private Button btnEstudiantes;
     private Button btnMaterias;
     private Button btnAsignacionMaterias;
@@ -35,7 +35,6 @@ public class Sidebar extends VBox {
     }
 
     public Sidebar() {
-        // Cargar CSS necesarios según componentes usados (botones)
         getStylesheets().addAll(
             getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
             getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
@@ -76,8 +75,9 @@ public class Sidebar extends VBox {
     }
 
     private void createUserInfo() {
-        // Avatar placeholder
-        ImageView userAvatar = new ImageView();
+        ImageView userAvatar = new ImageView(
+                new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/user.png"))
+        );
         userAvatar.setFitWidth(40);
         userAvatar.setFitHeight(40);
         userAvatar.getStyleClass().add("user-avatar");
@@ -117,10 +117,6 @@ public class Sidebar extends VBox {
     }
 
     private void createMenu() {
-        // Botones del menú con iconos SVG usando escalado preciso
-        btnDashboard = crearMenuButton("Dashboard",
-                "M3 12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1zm0 8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1zm10 0a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1zm1-17a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z");
-
         btnEstudiantes = crearMenuButton("Estudiantes",
                 "M10.5 16a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11M23 16a4 4 0 1 0 0-8a4 4 0 0 0 0 8M5 18a3 3 0 0 0-3 3v.15S2 27 10.5 27s8.5-5.85 8.5-5.85V21a3 3 0 0 0-3-3zm18 7c-1.456 0-2.608-.198-3.521-.513c.432-.7.68-1.375.82-1.92a6.4 6.4 0 0 0 .193-1.196l.004-.107l.001-.042V21a4.48 4.48 0 0 0-1.145-3h8.241A2.406 2.406 0 0 1 30 20.406S30 25 23 25");
 
@@ -148,15 +144,13 @@ public class Sidebar extends VBox {
         btnProfile = crearMenuButton("Mi Perfil",
                 "M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0m0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5z");
 
-        btnDashboard.getStyleClass().add("active");
+        btnEstudiantes.getStyleClass().add("active");
 
-        // Crear contenedor para los botones del menú
-        VBox menuButtons = new VBox(5, btnDashboard, btnEstudiantes, btnMaterias, btnAsignacionMaterias,
+        VBox menuButtons = new VBox(5, btnEstudiantes, btnMaterias, btnAsignacionMaterias,
                 btnInscripciones, btnUsuarios, btnProfile);
         menuButtons.getStyleClass().add("sidebar-menu");
         VBox.setVgrow(menuButtons, Priority.ALWAYS);
 
-        // Botón de cerrar sesión
         Button logoutButton = new Button("Cerrar Sesión");
         logoutButton.getStyleClass().add("primary-button");
         logoutButton.setOnAction(e -> {
@@ -231,7 +225,7 @@ public class Sidebar extends VBox {
     }
 
     private void setActiveButton(Button activeButton) {
-        Arrays.asList(btnDashboard, btnEstudiantes, btnMaterias, btnInscripciones, btnAsignacionMaterias,
+        Arrays.asList(btnEstudiantes, btnMaterias, btnInscripciones, btnAsignacionMaterias,
                         btnCalificaciones, btnReportes, btnUsuarios, btnConfiguracion, btnProfile)
                 .forEach(btn -> btn.getStyleClass().remove("active"));
         activeButton.getStyleClass().add("active");

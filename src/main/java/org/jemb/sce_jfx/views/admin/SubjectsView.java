@@ -7,12 +7,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.EnrollmentController;
 import org.jemb.sce_jfx.controllers.SubjectController;
+import org.jemb.sce_jfx.models.Student;
 import org.jemb.sce_jfx.models.Subject;
 
 public class SubjectsView extends VBox {
@@ -28,11 +31,9 @@ public class SubjectsView extends VBox {
     private Pagination pagination;
     private Label paginationInfo;
 
-    // Listas para paginación
     private ObservableList<Subject> masterSubjectsList = FXCollections.observableArrayList();
     private ObservableList<Subject> currentDisplayedList = FXCollections.observableArrayList();
 
-    // ====================== CONSTRUCTOR ======================
     public SubjectsView() {
         getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
@@ -49,7 +50,7 @@ public class SubjectsView extends VBox {
         setSpacing(20);
 
         pagination = new Pagination();
-        pagination.setPageFactory(pageIndex -> null); // Se usa manualmente
+        pagination.setPageFactory(pageIndex -> null);
 
         VBox content = new VBox(20);
         content.getChildren().addAll(
@@ -62,7 +63,6 @@ public class SubjectsView extends VBox {
 
         loadSubjects();
     }
-    // =========================================================
 
     private VBox createHeader() {
         Label title = new Label("Materias");
@@ -103,6 +103,7 @@ public class SubjectsView extends VBox {
         semesterFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterAndPaginate());
 
         Button newSubjectBtn = new Button("+ Nueva Materia");
+        newSubjectBtn.setTooltip(new Tooltip("Agregar una nueva materia"));
         newSubjectBtn.getStyleClass().add("primary-button");
         newSubjectBtn.setOnAction(e -> showNewSubjectDialog());
 
@@ -116,7 +117,6 @@ public class SubjectsView extends VBox {
         subjectsTable = new TableView<>();
         subjectsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Columna índice
         TableColumn<Subject, Void> indexCol = new TableColumn<>("#");
         indexCol.setCellFactory(column -> new TableCell<Subject, Void>() {
             @Override
@@ -132,22 +132,18 @@ public class SubjectsView extends VBox {
         });
         indexCol.setPrefWidth(50);
 
-        // Código
         TableColumn<Subject, String> codeCol = new TableColumn<>("CÓDIGO");
         codeCol.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
         codeCol.setPrefWidth(100);
 
-        // Nombre
         TableColumn<Subject, String> nameCol = new TableColumn<>("MATERIA");
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameCol.setPrefWidth(250);
 
-        // Créditos
         TableColumn<Subject, Integer> creditsCol = new TableColumn<>("CRÉDITOS");
         creditsCol.setCellValueFactory(new PropertyValueFactory<>("credits"));
         creditsCol.setPrefWidth(100);
 
-        // Semestre
         TableColumn<Subject, Integer> semesterCol = new TableColumn<>("SEMESTRE");
         semesterCol.setCellValueFactory(new PropertyValueFactory<>("semesterAvailable"));
         semesterCol.setCellFactory(column -> new TableCell<Subject, Integer>() {
@@ -163,7 +159,6 @@ public class SubjectsView extends VBox {
         });
         semesterCol.setPrefWidth(100);
 
-        // Inscritos
         TableColumn<Subject, String> enrolledCol = new TableColumn<>("INSCRITOS");
         enrolledCol.setCellValueFactory(cellData -> {
             Subject subject = cellData.getValue();
@@ -180,7 +175,6 @@ public class SubjectsView extends VBox {
         });
         enrolledCol.setPrefWidth(100);
 
-        // Estado
         TableColumn<Subject, String> statusCol = new TableColumn<>("ESTADO");
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         statusCol.setCellFactory(column -> new TableCell<Subject, String>() {
@@ -199,26 +193,40 @@ public class SubjectsView extends VBox {
         });
         statusCol.setPrefWidth(100);
 
-        // Acciones
         TableColumn<Subject, Void> actionsCol = new TableColumn<>("ACCIONES");
         actionsCol.setCellFactory(column -> new TableCell<Subject, Void>() {
 
-            private final Button editBtn = new Button("Editar");
-            private final Button deleteBtn = new Button("Eliminar");
+            private final Button editBtn;
+            private final Button deleteBtn;
 
             {
+                ImageView iconEdit = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/edit.png"))
+                );
+                iconEdit.setFitWidth(16);
+                iconEdit.setFitHeight(16);
+                editBtn = new Button("", iconEdit);
                 editBtn.getStyleClass().add("edit-button");
-                deleteBtn.getStyleClass().add("delete-button");
-
+                editBtn.setTooltip(new Tooltip("Editar materia"));
                 editBtn.setOnAction(e -> {
                     Subject subject = getTableView().getItems().get(getIndex());
                     showEditSubjectDialog(subject);
                 });
 
+                ImageView iconDelete = new ImageView(
+                        new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/delete.png"))
+                );
+                iconDelete.setFitWidth(16);
+                iconDelete.setFitHeight(16);
+                deleteBtn = new Button("", iconDelete);
+                deleteBtn.getStyleClass().add("delete-button");
+                deleteBtn.setTooltip(new Tooltip("Eliminar materia"));
                 deleteBtn.setOnAction(e -> {
                     Subject subject = getTableView().getItems().get(getIndex());
                     showDeleteConfirmation(subject);
                 });
+
+                setAlignment(Pos.CENTER);
             }
 
             @Override
