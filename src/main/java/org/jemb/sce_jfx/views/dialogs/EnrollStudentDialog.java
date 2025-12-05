@@ -145,30 +145,51 @@ public class EnrollStudentDialog extends Dialog<Enrollment> {
         try {
             List<Student> allStudents = studentController.getAllStudents();
 
-            // Filtrar solo estudiantes activos
-            List<Student> activeStudents = allStudents.stream()
+            // Obtener semester_available de la materia
+            Integer requiredSemester = teacherSubject.getSubject().getSemesterAvailable();
+
+            // Filtrar estudiantes activos Y que pertenezcan al semestre de la materia
+            List<Student> eligibleStudents = allStudents.stream()
                     .filter(Student::isActive)
+                    .filter(student -> {
+                        // Si la materia no tiene semestre definido, mostrar todos los estudiantes
+                        if (requiredSemester == null) {
+                            return true;
+                        }
+
+                        Integer studentSemester = student.getCurrentSemester();
+                        return studentSemester != null && studentSemester.equals(requiredSemester);
+                    })
                     .toList();
 
-            studentComboBox.getItems().setAll(activeStudents);
+            studentComboBox.getItems().setAll(eligibleStudents);
 
-            // Configurar el display del ComboBox
+            // Actualizar el StringConverter para mostrar mejor información
             studentComboBox.setConverter(new javafx.util.StringConverter<Student>() {
                 @Override
                 public String toString(Student student) {
-                    if (student == null)
-                        return "";
-                    return student.getFullName() + " (" + student.getStudentCode() + ")";
+                    if (student == null) return "";
+                    Integer semester = student.getCurrentSemester() != null ? student.getCurrentSemester() : 1;
+                    return String.format("%s - %s (Sem: %d)",
+                            student.getStudentCode(),
+                            student.getFullName(),
+                            semester);
                 }
 
                 @Override
                 public Student fromString(String string) {
                     return studentComboBox.getItems().stream()
-                            .filter(s -> (s.getFullName() + " (" + s.getStudentCode() + ")").equals(string))
+                            .filter(s -> toString(s).equals(string))
                             .findFirst()
                             .orElse(null);
                 }
             });
+
+            if (eligibleStudents.isEmpty()) {
+                showWarning("No hay estudiantes elegibles para esta materia.\n" +
+                        "La materia requiere semestre: " +
+                        (requiredSemester != null ? requiredSemester : "No especificado"));
+            }
 
         } catch (Exception e) {
             showError("Error al cargar estudiantes: " + e.getMessage());
@@ -229,6 +250,15 @@ public class EnrollStudentDialog extends Dialog<Enrollment> {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private void showWarning(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

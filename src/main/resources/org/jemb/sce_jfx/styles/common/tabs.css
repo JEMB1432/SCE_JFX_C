@@ -1,3 +1,4 @@
+/* ==================== TABS / PESTAÑAS ==================== */
 
 .tab-pane {
     -fx-background-color: white;
@@ -6,22 +7,34 @@
 
 .tab-pane .tab-header-area {
     -fx-background-color: white;
-    -fx-padding: 0 0 0 0;
+    -fx-padding: 0;
 }
 
-.tab-pane .tab-header-background {
-    -fx-background-color: #f9f9f9;
+.tab-pane .headers-region {
+    -fx-background-color: white;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: white;
     -fx-border-color: #e6e6e6;
-    -fx-border-width: 0 0 1px 0;
+    -fx-border-width: 0 0 2px 0;
 }
 
 .tab-pane .tab {
     -fx-background-color: transparent;
+    -fx-background-insets: 0;
     -fx-background-radius: 0;
-    -fx-padding: 12px 24px;
+    -fx-padding: 14px 28px;
     -fx-border-color: transparent;
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-insets: 0;
 }
 
+.tab-pane .tab .tab-container {
+    -fx-background-color: transparent;
+}
+
+/* Label del tab - Estado normal */
 .tab-pane .tab .tab-label {
     -fx-text-fill: #6b7280;
     -fx-font-size: 14px;
@@ -30,37 +43,99 @@
 }
 
 .tab-pane .tab:hover {
-    -fx-background-color: rgba(47, 88, 86, 0.05);
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: transparent;
 }
 
 .tab-pane .tab:selected {
-    -fx-background-color: white;
-    -fx-border-color: #2f5856;
-    -fx-border-width: 0 0 3px 0;
+    -fx-background-color: white !important;
+    -fx-background-insets: 0 !important;
+    -fx-background-radius: 0 !important;
+    -fx-border-color: transparent transparent #2f5856 transparent !important;
+    -fx-border-width: 0 0 3px 0 !important;
+    -fx-border-insets: 0 !important;
+}
+
+.tab-pane .tab:selected .tab-container {
+    -fx-background-color: white !important;
 }
 
 .tab-pane .tab:selected .tab-label {
-    -fx-text-fill: #2f5856;
-    -fx-font-weight: 600;
+    -fx-text-fill: #2f5856 !important;
+    -fx-font-weight: 600 !important;
 }
 
+/* Eliminar hover effect en tab seleccionado */
+.tab-pane .tab:selected:hover {
+    -fx-background-color: white !important;
+}
+
+/* Contenido del tab */
 .tab-pane .tab-content-area {
     -fx-background-color: white;
     -fx-padding: 0;
     -fx-border-color: transparent;
 }
 
+/* Eliminar el foco visual y efectos de selección */
 .tab-pane .tab:focused {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent, transparent;
+    -fx-background-insets: 0, 0;
 }
 
+.tab-pane .tab:selected:focused {
+    -fx-background-color: white !important;
+    -fx-border-color: transparent transparent #2f5856 transparent !important;
+}
+
+/* Eliminar animaciones y efectos de transición */
+.tab-pane:focused .tab:selected {
+    -fx-background-color: white !important;
+}
+
+/* Botón de cerrar tab (si lo hubiera) - lo ocultamos */
 .tab-pane .tab .tab-close-button {
+    -fx-background-color: transparent;
+    visibility: hidden;
+}
+
+/* Eliminar cualquier línea o separador entre tabs */
+.tab-pane .control-buttons-tab {
     -fx-background-color: transparent;
 }
 
-/* ==================== GRÁFICAS ==================== */
+/* Clase personalizada para tabs */
+.tab-pane .custom-tab {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+}
 
+.tab-pane .custom-tab:selected {
+    -fx-background-color: white !important;
+    -fx-border-color: transparent transparent #2f5856 transparent !important;
+    -fx-border-width: 0 0 3px 0 !important;
+}
+
+.tab-pane .custom-tab:selected .tab-label {
+    -fx-text-fill: #2f5856 !important;
+    -fx-font-weight: 600 !important;
+}
+
+.tab-pane .custom-tab:hover:selected {
+    -fx-background-color: white !important;
+}
+
+.tab-pane .custom-tab:hover{
+    -fx-background-color: #f9f9f9;
+}
+
+/* ==================== ESTILOS PARA GRÁFICOS ==================== */
+
+/* Títulos de gráficos */
 .chart-title {
     -fx-font-size: 16px;
     -fx-font-weight: 600;
@@ -68,6 +143,7 @@
     -fx-padding: 0 0 12px 0;
 }
 
+/* Leyendas de gráficos */
 .chart-legend {
     -fx-background-color: white;
     -fx-padding: 8px;
@@ -79,10 +155,12 @@
     -fx-text-fill: #6b7280;
 }
 
+/* Área de los gráficos */
 .chart-content {
     -fx-padding: 16px;
 }
 
+/* Ejes de gráficos */
 .axis {
     -fx-tick-label-fill: #6b7280;
     -fx-font-size: 11px;
@@ -94,12 +172,14 @@
     -fx-font-weight: 500;
 }
 
+/* Grid lines */
 .chart-vertical-grid-lines,
 .chart-horizontal-grid-lines {
     -fx-stroke: #e6e6e6;
     -fx-stroke-width: 0.5px;
 }
 
+/* Colores para gráficos de barras */
 .default-color0.chart-bar {
     -fx-bar-fill: #2f5856;
 }
@@ -112,6 +192,7 @@
     -fx-bar-fill: #10b981;
 }
 
+/* Colores para gráficos de líneas */
 .default-color0.chart-series-line {
     -fx-stroke: #2f5856;
     -fx-stroke-width: 2px;
@@ -190,6 +271,7 @@
     -fx-pie-color: #06b6d4;
 }
 
+/* Tooltips personalizados */
 .chart-tooltip {
     -fx-background-color: rgba(17, 24, 39, 0.95);
     -fx-background-radius: 6px;

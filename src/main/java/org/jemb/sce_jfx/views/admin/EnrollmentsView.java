@@ -142,7 +142,8 @@ public class EnrollmentsView extends VBox {
                 }
             }
         });
-        indexCol.setPrefWidth(50);
+        indexCol.setPrefWidth(20);
+        indexCol.setStyle("-fx-alignment: CENTER; -fx-text-fill: #6b7280;");
 
         TableColumn<Enrollment, String> studentCol = new TableColumn<>("ESTUDIANTE");
         studentCol.setCellValueFactory(c -> {

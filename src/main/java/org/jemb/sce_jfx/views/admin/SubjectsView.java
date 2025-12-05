@@ -134,7 +134,8 @@ public class SubjectsView extends VBox {
                 }
             }
         });
-        indexCol.setPrefWidth(50);
+        indexCol.setPrefWidth(20);
+        indexCol.setStyle("-fx-alignment: CENTER; -fx-text-fill: #6b7280;");
 
         TableColumn<Subject, String> codeCol = new TableColumn<>("CÓDIGO");
         codeCol.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));

@@ -28,7 +28,9 @@ public class StudentFormDialog extends Dialog<Student> {
     private DatePicker dateOfBirthPicker;
     private TextArea addressArea;
     private ComboBox<String> statusCombo;
+    private ComboBox<Integer> currentSemesterCombo;
 
+    private Label currentSemesterError;
     private Label studentCodeError;
     private Label firstNameError;
     private Label lastNameError;
@@ -63,8 +65,7 @@ public class StudentFormDialog extends Dialog<Student> {
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/components/dialogs.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/students.css").toExternalForm()
-        );
+                getClass().getResource("/org/jemb/sce_jfx/styles/students.css").toExternalForm());
 
         ButtonType saveButtonType = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -127,11 +128,16 @@ public class StudentFormDialog extends Dialog<Student> {
                 phoneError = createErrorLabel());
         formGrid.add(phoneSection, 1, 2);
 
+        VBox semesterSection = createLabeledField("Semestre Actual *",
+                createCurrentSemesterCombo(),
+                currentSemesterError = createErrorLabel());
+        formGrid.add(semesterSection, 0, 3);
+
         if (isEditMode) {
             VBox statusSection = createLabeledField("Estado",
                     createStatusCombo(),
                     createErrorLabel());
-            formGrid.add(statusSection, 0, 3);
+            formGrid.add(statusSection, 1, 3);
         }
 
         VBox addressSection = new VBox(6);
@@ -140,14 +146,14 @@ public class StudentFormDialog extends Dialog<Student> {
 
         addressArea = new TextArea();
         addressArea.setPromptText("Ingrese la dirección completa (opcional)");
-        addressArea.setPrefRowCount(2); // Menos filas para compactar
+        addressArea.setPrefRowCount(2);
         addressArea.setPrefHeight(60);
         addressArea.getStyleClass().add("form-field");
 
         addressSection.getChildren().addAll(addressLabel, addressArea);
 
-        int addressRow = isEditMode ? 4 : 3;
-        formGrid.add(addressSection, 0, addressRow, 2, 1); // Ocupa 2 columnas
+        int addressRow = 4;
+        formGrid.add(addressSection, 0, addressRow, 2, 1);
 
         if (isEditMode) {
             studentCodeField.setDisable(true);
@@ -157,8 +163,7 @@ public class StudentFormDialog extends Dialog<Student> {
         formContainer.getChildren().addAll(
                 formTitle,
                 new Separator(),
-                formGrid
-        );
+                formGrid);
 
         Label noteLabel = new Label("* Campos obligatorios");
         noteLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #6b7280; -fx-font-style: italic;");
@@ -207,6 +212,17 @@ public class StudentFormDialog extends Dialog<Student> {
         return statusCombo;
     }
 
+    private ComboBox<Integer> createCurrentSemesterCombo() {
+        currentSemesterCombo = new ComboBox<>();
+        currentSemesterCombo.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+        currentSemesterCombo.setValue(1);
+        currentSemesterCombo.setPromptText("Seleccione semestre");
+        currentSemesterCombo.getStyleClass().add("form-field");
+        currentSemesterCombo.setPrefHeight(35);
+        currentSemesterCombo.setMaxWidth(Double.MAX_VALUE);
+        return currentSemesterCombo;
+    }
+
     private Label createErrorLabel() {
         Label label = new Label();
         label.getStyleClass().add("error-label");
@@ -235,6 +251,10 @@ public class StudentFormDialog extends Dialog<Student> {
 
         phoneField.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePhone();
+        });
+
+        currentSemesterCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            validateCurrentSemester();
         });
 
         dateOfBirthPicker.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -337,6 +357,15 @@ public class StudentFormDialog extends Dialog<Student> {
         return true;
     }
 
+    private boolean validateCurrentSemester() {
+        if (currentSemesterCombo.getValue() == null) {
+            showError(currentSemesterCombo, currentSemesterError, "Debe seleccionar el semestre actual");
+            return false;
+        }
+        clearError(currentSemesterCombo, currentSemesterError);
+        return true;
+    }
+
     private boolean validateDateOfBirth() {
         LocalDate date = dateOfBirthPicker.getValue();
 
@@ -362,6 +391,7 @@ public class StudentFormDialog extends Dialog<Student> {
         valid &= validateLastName();
         valid &= validateEmail();
         valid &= validatePhone();
+        valid &= validateCurrentSemester();
         valid &= validateDateOfBirth();
 
         return valid;
@@ -387,8 +417,7 @@ public class StudentFormDialog extends Dialog<Student> {
                 getDialogPane().getButtonTypes().stream()
                         .filter(buttonType -> buttonType.getButtonData() == ButtonBar.ButtonData.OK_DONE)
                         .findFirst()
-                        .orElse(null)
-        );
+                        .orElse(null));
 
         if (saveButton != null) {
             // Manejar el evento del botón guardar
@@ -421,6 +450,7 @@ public class StudentFormDialog extends Dialog<Student> {
                         student.setLastName(lastNameField.getText().trim());
                         student.setEmail(emailField.getText().trim());
                         student.setPhone(phoneField.getText().trim());
+                        student.setCurrentSemester(currentSemesterCombo.getValue());
                         student.setDateOfBirth(dateOfBirthPicker.getValue());
                         student.setAddress(addressArea.getText().trim());
                         student.setStatus(statusCombo.getValue());
@@ -452,6 +482,10 @@ public class StudentFormDialog extends Dialog<Student> {
                         }
                         if (!FormValidator.isEmpty(addressArea.getText())) {
                             student.setAddress(addressArea.getText().trim());
+                        }
+
+                        if (currentSemesterCombo.getValue() != null) {
+                            student.setCurrentSemester(currentSemesterCombo.getValue());
                         }
 
                         // Actualizar con campos opcionales
@@ -512,6 +546,10 @@ public class StudentFormDialog extends Dialog<Student> {
 
             if (statusCombo != null && existingStudent.getStatus() != null) {
                 statusCombo.setValue(existingStudent.getStatus());
+            }
+
+            if (existingStudent.getCurrentSemester() != null) {
+                currentSemesterCombo.setValue(existingStudent.getCurrentSemester());
             }
         }
     }

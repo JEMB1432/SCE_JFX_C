@@ -48,6 +48,18 @@ public class EnrollmentController {
             throw new IllegalArgumentException("La materia no está activa");
         }
 
+        // Validar semester_available vs current_semester del estudiante
+        if (subject.getSemesterAvailable() != null) {
+            if (student.getCurrentSemester() == null ||
+                    student.getCurrentSemester() < subject.getSemesterAvailable()) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "El estudiante está en el semestre %d. Esta materia está disponible a partir del semestre %d.",
+                                student.getCurrentSemester() != null ? student.getCurrentSemester() : 1,
+                                subject.getSemesterAvailable()));
+            }
+        }
+
         // Validar semestre del período académico
         if (semester < 1) {
             throw new IllegalArgumentException("El semestre debe ser mayor a 0");

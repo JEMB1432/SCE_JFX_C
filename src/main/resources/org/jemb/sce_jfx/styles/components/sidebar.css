@@ -2,19 +2,19 @@
 
 .sidebar {
     -fx-background-color: white;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 2, 0);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0), 10, 0, 2, 0);
     -fx-padding: 20 0 0 0;
-    -fx-pref-width: 220px; /* Reducir ancho del sidebar */
+    -fx-pref-width: 220px;
     -fx-min-width: 200px;
     -fx-max-width: 220px;
     -fx-alignment: top-center;
 }
 
 .logo {
-    -fx-padding: 0 15 15 15; /* Reducir padding */
+    -fx-padding: 0 15 15 15;
     -fx-border-color: #e5e5e5;
     -fx-border-width: 0 0 1 0;
-    -fx-spacing: 8; /* Reducir espaciado */
+    -fx-spacing: 8;
     -fx-alignment: center-left;
 }
 
@@ -24,15 +24,15 @@
 
 .logo-text {
     -fx-font-weight: bold;
-    -fx-font-size: 16px; /* Reducir tamaño de fuente */
+    -fx-font-size: 16px;
     -fx-text-fill: #305252;
 }
 
 /* ==================== USER INFO ==================== */
 
 .user-info {
-    -fx-padding: 0 15 15 15; /* Reducir padding */
-    -fx-spacing: 8; /* Reducir espaciado */
+    -fx-padding: 0 15 15 15;
+    -fx-spacing: 8;
     -fx-alignment: center-left;
 }
 
@@ -42,34 +42,34 @@
 }
 
 .user-name {
-    -fx-font-size: 13px; /* Reducir tamaño */
+    -fx-font-size: 13px;
     -fx-font-weight: 600;
     -fx-text-fill: #1a1a1a;
 }
 
 .user-role {
-    -fx-font-size: 11px; /* Reducir tamaño */
+    -fx-font-size: 11px;
     -fx-text-fill: #666666;
 }
 
 /* ==================== MENU ==================== */
 
 .sidebar-menu {
-    -fx-spacing: 3px; /* Reducir espaciado entre botones */
-    -fx-padding: 8px 0; /* Reducir padding */
+    -fx-spacing: 3px;
+    -fx-padding: 8px 0;
 }
 
 .menu-button {
     -fx-background-color: white;
     -fx-border-color: transparent;
-    -fx-padding: 8 12 8 12; /* Reducir padding interno */
+    -fx-padding: 8 12 8 12;
     -fx-alignment: center-left;
     -fx-content-display: left;
-    -fx-spacing: 8; /* Reducir espaciado */
-    -fx-font-size: 13px; /* Reducir tamaño de fuente */
+    -fx-spacing: 8;
+    -fx-font-size: 13px;
     -fx-text-fill: #1a1a1a;
     -fx-cursor: hand;
-    -fx-min-width: 200px; /* Reducir ancho mínimo */
+    -fx-min-width: 200px;
 }
 
 .menu-button:hover,
@@ -106,7 +106,7 @@
 }
 
 .logout-container {
-    -fx-padding: 8; /* Reducir padding */
+    -fx-padding: 8;
     -fx-alignment: bottom-center;
 }
 
@@ -114,12 +114,12 @@
 
 .button-content {
     -fx-alignment: center-left;
-    -fx-spacing: 8; /* Reducir espaciado */
+    -fx-spacing: 8;
 }
 
 .menu-label {
     -fx-text-fill: inherit;
-    -fx-font-size: 13px; /* Reducir tamaño */
+    -fx-font-size: 13px;
     -fx-font-weight: normal;
 }
 

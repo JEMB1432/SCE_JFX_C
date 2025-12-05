@@ -166,7 +166,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                 new Separator(),
                 formGrid);
 
-        Label noteLabel = new Label("* Campos obligatorios");
+        Label noteLabel = new Label("* Campos obligatorios \n- Debe de llenar los campos en orden");
         noteLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #6b7280; -fx-font-style: italic;");
         formContainer.getChildren().add(noteLabel);
 
@@ -220,12 +220,14 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
     private ComboBox<Student> createStudentCombo() {
         studentCombo = new ComboBox<>();
 
+        // Obtener estudiantes activos
         List<Student> activeStudents = studentController.getAllStudents().stream()
                 .filter(Student::isActive)
                 .collect(Collectors.toList());
 
         studentCombo.getItems().addAll(activeStudents);
 
+        // Configurar cómo se muestran los estudiantes
         studentCombo.setCellFactory(param -> new ListCell<Student>() {
             @Override
             protected void updateItem(Student item, boolean empty) {
@@ -233,7 +235,10 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getStudentCode() + " - " + item.getFullName());
+                    setText(String.format("%s - %s (Sem: %d)",
+                            item.getStudentCode(),
+                            item.getFullName(),
+                            item.getCurrentSemester() != null ? item.getCurrentSemester() : 1));
                 }
             }
         });
@@ -245,7 +250,10 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getStudentCode() + " - " + item.getFullName());
+                    setText(String.format("%s - %s (Sem: %d)",
+                            item.getStudentCode(),
+                            item.getFullName(),
+                            item.getCurrentSemester() != null ? item.getCurrentSemester() : 1));
                 }
             }
         });
@@ -268,7 +276,10 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getSubjectCode() + " - " + item.getName());
+                    String semesterInfo = item.getSemesterAvailable() != null
+                            ? " (Sem: " + item.getSemesterAvailable() + ")"
+                            : "";
+                    setText(item.getSubjectCode() + " - " + item.getName() + semesterInfo);
                 }
             }
         });
@@ -280,7 +291,10 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getSubjectCode() + " - " + item.getName());
+                    String semesterInfo = item.getSemesterAvailable() != null
+                            ? " (Sem: " + item.getSemesterAvailable() + ")"
+                            : "";
+                    setText(item.getSubjectCode() + " - " + item.getName() + semesterInfo);
                 }
             }
         });
@@ -303,12 +317,12 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
     private ComboBox<Integer> createSemesterCombo() {
         semesterCombo = new ComboBox<>();
-        // Permitir semestres flexibles (ajustado según necesidades de la institución)
         semesterCombo.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         semesterCombo.setPromptText("Seleccione semestre");
         semesterCombo.getStyleClass().add("form-field");
         semesterCombo.setPrefHeight(35);
         semesterCombo.setMaxWidth(Double.MAX_VALUE);
+        semesterCombo.setDisable(true);
         return semesterCombo;
     }
 
@@ -323,7 +337,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
     private ComboBox<String> createStatusCombo() {
         statusCombo = new ComboBox<>();
-        statusCombo.getItems().addAll("enrolled", "completed", "dropped");
+        statusCombo.getItems().addAll("Inscrito", "Completado", "Dado de baja");
         statusCombo.setValue("enrolled");
         statusCombo.getStyleClass().add("form-field");
         statusCombo.setPrefHeight(35);
@@ -342,17 +356,35 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
     private void updateSubjectCombo() {
         subjectCombo.getItems().clear();
+        Student selectedStudent = studentCombo.getValue();
 
-        // Mostrar todas las materias activas
-        List<Subject> availableSubjects = subjectController.getAllSubjects().stream()
+        List<Subject> allSubjects = subjectController.getAllSubjects().stream()
                 .filter(Subject::isActive)
+                .collect(Collectors.toList());
+
+        if (selectedStudent == null) {
+            subjectCombo.getItems().addAll(allSubjects);
+            return;
+        }
+
+        Integer studentSemester = selectedStudent.getCurrentSemester() != null
+                ? selectedStudent.getCurrentSemester()
+                : 1;
+
+        List<Subject> availableSubjects = allSubjects.stream()
+                .filter(subject -> {
+                    Integer subjectSemester = subject.getSemesterAvailable();
+                    return subjectSemester == null || subjectSemester.equals(studentSemester);
+                })
                 .collect(Collectors.toList());
 
         subjectCombo.getItems().addAll(availableSubjects);
 
-        // Si solo hay una materia disponible, seleccionarla automáticamente
-        if (availableSubjects.size() == 1) {
-            subjectCombo.setValue(availableSubjects.get(0));
+        if (isEditMode && existingEnrollment != null && existingEnrollment.getSubject() != null) {
+            Subject currentSubject = existingEnrollment.getSubject();
+            if (!availableSubjects.contains(currentSubject)) {
+                subjectCombo.getItems().add(0, currentSubject);
+            }
         }
     }
 
@@ -398,31 +430,40 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         studentCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateStudent();
             updateSubjectCombo();
+            setDefaultSemesterBasedOnStudent(); // Establecer semestre automáticamente
             subjectCombo.setValue(null);
+            if (teacherCombo != null) {
+                teacherCombo.setValue(null);
+            }
         });
+
         subjectCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateSubject();
             if (!isEditMode) {
                 loadTeachersForSubject();
             }
         });
+
         academicYearField.textProperty().addListener((obs, oldVal, newVal) -> {
             validateAcademicYear();
             if (!isEditMode) {
                 loadTeachersForSubject();
             }
         });
+
         semesterCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateSemester();
             if (!isEditMode) {
                 loadTeachersForSubject();
             }
         });
+
         if (!isEditMode && teacherCombo != null) {
             teacherCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
                 validateTeacher();
             });
         }
+
         enrollmentDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateEnrollmentDate();
         });
@@ -442,6 +483,28 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         if (subjectCombo.getValue() == null) {
             showError(subjectCombo, subjectError, "Debe seleccionar una materia");
             return false;
+        }
+
+        // Validar que el estudiante pueda inscribirse en esta materia
+        Student selectedStudent = studentCombo.getValue();
+        Subject selectedSubject = subjectCombo.getValue();
+
+        if (selectedStudent != null && selectedSubject != null) {
+            if (!selectedStudent.canEnrollInSubject(selectedSubject)) {
+                Integer requiredSemester = selectedSubject.getSemesterAvailable();
+                Integer studentSemester = selectedStudent.getCurrentSemester() != null ?
+                        selectedStudent.getCurrentSemester() : 1;
+
+                if (requiredSemester != null) {
+                    showError(subjectCombo, subjectError,
+                            "El estudiante está en el semestre " + studentSemester +
+                                    ". Esta materia está disponible a partir del semestre " + requiredSemester);
+                } else {
+                    showError(subjectCombo, subjectError,
+                            "El estudiante no puede inscribirse en esta materia.");
+                }
+                return false;
+            }
         }
 
         clearError(subjectCombo, subjectError);
@@ -585,7 +648,21 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                         enrollment.setEnrollmentDate(enrollmentDatePicker.getValue());
 
                         if (statusCombo != null) {
-                            enrollment.setStatus(statusCombo.getValue());
+                            String status = statusCombo.getValue().toLowerCase();
+                            switch (status) {
+                                case "inscrito":
+                                    status = "enrrolled";
+                                    break;
+                                case "completado":
+                                    status = "completed";
+                                    break;
+                                case "dado de baja":
+                                    status = "dropped";
+                                    break;
+                                default:
+                                    status = "enrolled";
+                            }
+                            enrollment.setStatus(status);
                         }
 
                         Enrollment updatedEnrollment = enrollmentController.updateEnrollment(enrollment);
@@ -643,6 +720,19 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         });
     }
 
+    private void setDefaultSemesterBasedOnStudent() {
+        Student selectedStudent = studentCombo.getValue();
+        if (selectedStudent != null && !isEditMode) {
+            // Establecer el semestre del combo igual al semestre del estudiante
+            Integer studentSemester = selectedStudent.getCurrentSemester();
+            if (studentSemester != null && studentSemester >= 1 && studentSemester <= 10) {
+                semesterCombo.setValue(studentSemester);
+            } else {
+                semesterCombo.setValue(1);
+            }
+        }
+    }
+
     private void loadExistingData() {
         if (existingEnrollment != null) {
             if (existingEnrollment.getStudent() != null) {
@@ -659,7 +749,9 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                 academicYearField.setText(existingEnrollment.getAcademicYear());
             }
 
-            semesterCombo.setValue(existingEnrollment.getSemester());
+            if (existingEnrollment.getSemester() != null) {
+                semesterCombo.setValue(existingEnrollment.getSemester());
+            }
 
             if (existingEnrollment.getEnrollmentDate() != null) {
                 enrollmentDatePicker.setValue(existingEnrollment.getEnrollmentDate());

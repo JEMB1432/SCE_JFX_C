@@ -43,10 +43,10 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/components/dialogs.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/common/tabs.css").toExternalForm());
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/tabs.css").toExternalForm()
+        );
 
         VBox content = createContent();
-        DialogUtils.setDialogIcon(this);
         getDialogPane().setContent(content);
 
         getDialogPane().setPrefSize(1000, 700);
@@ -65,16 +65,20 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
         container.setPadding(new Insets(24));
         container.setStyle("-fx-background-color: white;");
 
+        // Header personalizado
         VBox header = createCustomHeader();
 
+        // Verificar si el estudiante tiene calificaciones
         if (!performanceService.hasGrades(student.getId())) {
             VBox emptyState = createEmptyState();
             container.getChildren().addAll(header, emptyState);
             return container;
         }
 
+        // Información general con estadísticas
         HBox statsBox = createStatsBox();
 
+        // Crear pestañas con gráficos
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         tabPane.getStyleClass().add("tab-pane");
@@ -84,6 +88,19 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
         progressChartTab = createProgressChartTab();
 
         tabPane.getTabs().addAll(subjectChartTab, evaluationTypeChartTab, progressChartTab);
+
+        tabPane.getTabs().forEach(tab -> {
+            tab.getStyleClass().add("custom-tab");
+        });
+
+        tabPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getRoot().applyCss();
+                tabPane.lookupAll(".tab").forEach(node -> {
+                    node.setStyle("-fx-background-color: transparent; -fx-background-radius: 0;");
+                });
+            }
+        });
 
         container.getChildren().addAll(header, statsBox, tabPane);
         VBox.setVgrow(tabPane, javafx.scene.layout.Priority.ALWAYS);

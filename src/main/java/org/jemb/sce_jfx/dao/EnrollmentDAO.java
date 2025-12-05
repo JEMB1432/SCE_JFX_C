@@ -409,7 +409,6 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
         enrollment.setStatus(rs.getString("status"));
         enrollment.setCreatedAt(DatabaseUtils.toLocalDateTime(rs.getTimestamp("created_at")));
 
-        // Cargar relaciones si se solicita
         if (loadRelations) {
             studentDAO.findById(enrollment.getStudentId()).ifPresent(enrollment::setStudent);
             subjectDAO.findById(enrollment.getSubjectId()).ifPresent(enrollment::setSubject);

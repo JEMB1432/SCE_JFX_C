@@ -76,7 +76,7 @@ public class Enrollment {
         this.academicYear = academicYear;
     }
 
-    public int getSemester() {
+    public Integer getSemester() {
         return semester;
     }
 
@@ -124,7 +124,6 @@ public class Enrollment {
         this.subject = subject;
     }
 
-    // Métodos utilitarios
     public boolean isEnrolled() {
         return "enrolled".equals(status);
     }

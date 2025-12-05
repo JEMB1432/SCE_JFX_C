@@ -34,3 +34,31 @@
     -fx-font-weight: bold;
     -fx-text-fill: #111827;
 }
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #2f5856;
+    -fx-text-fill: white;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #264644;
+    -fx-text-fill: white;
+}
+
+.combo-box-popup .list-view:focused {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 5px;
+}
+
+.combo-box .arrow-button:hover {
+    -fx-background-color: #e3e3e3;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #2f5856;
+}

@@ -111,6 +111,8 @@ public class StudentsView extends VBox {
     private VBox createTableWithPagination() {
         studentsTable = new TableView<>();
         studentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        studentsTable.setEditable(false);
+        studentsTable.setPrefHeight(800);
 
         TableColumn<Student, Void> indexCol = new TableColumn<>("#");
         indexCol.setCellFactory(column -> new TableCell<Student, Void>() {
@@ -126,7 +128,8 @@ public class StudentsView extends VBox {
                 }
             }
         });
-        indexCol.setPrefWidth(50);
+        indexCol.setPrefWidth(20);
+        indexCol.setStyle("-fx-alignment: CENTER; -fx-text-fill: #6b7280;");
 
         TableColumn<Student, String> codeCol = new TableColumn<>("MATRICULA");
         codeCol.setCellValueFactory(new PropertyValueFactory<>("studentCode"));
@@ -161,6 +164,7 @@ public class StudentsView extends VBox {
             }
             return new javafx.beans.property.SimpleStringProperty("-");
         });
+        enrollmentCol.setPrefWidth(50);
 
         TableColumn<Student, String> statusCol = new TableColumn<>("ESTADO");
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -179,7 +183,7 @@ public class StudentsView extends VBox {
                 }
             }
         });
-        statusCol.setPrefWidth(100);
+        statusCol.setPrefWidth(60);
 
         TableColumn<Student, Void> actionsCol = new TableColumn<>("ACCIONES");
         actionsCol.setCellFactory(column -> new TableCell<Student, Void>() {

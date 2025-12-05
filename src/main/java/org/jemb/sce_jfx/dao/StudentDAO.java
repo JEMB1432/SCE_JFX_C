@@ -69,8 +69,10 @@ public class StudentDAO implements GenericDAO<Student, String> {
 
     @Override
     public Student save(Student student) {
-        String sql = "INSERT INTO " + TABLE_NAME + " (id, student_code, first_name, last_name, email, phone, date_of_birth, address, enrollment_date, status, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO " + TABLE_NAME
+                + " (id, student_code, first_name, last_name, email, phone, date_of_birth, address, enrollment_date, current_semester, status, created_at, updated_at) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -88,9 +90,10 @@ public class StudentDAO implements GenericDAO<Student, String> {
             DatabaseUtils.setNullableParameter(stmt, 7, DatabaseUtils.toSqlDate(student.getDateOfBirth()));
             DatabaseUtils.setNullableParameter(stmt, 8, student.getAddress());
             stmt.setDate(9, DatabaseUtils.toSqlDate(student.getEnrollmentDate()));
-            stmt.setString(10, student.getStatus());
-            stmt.setTimestamp(11, DatabaseUtils.toSqlTimestamp(student.getCreatedAt()));
-            stmt.setTimestamp(12, DatabaseUtils.toSqlTimestamp(student.getUpdatedAt()));
+            stmt.setInt(10, student.getCurrentSemester() != null ? student.getCurrentSemester() : 1);
+            stmt.setString(11, student.getStatus());
+            stmt.setTimestamp(12, DatabaseUtils.toSqlTimestamp(student.getCreatedAt()));
+            stmt.setTimestamp(13, DatabaseUtils.toSqlTimestamp(student.getUpdatedAt()));
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -109,7 +112,8 @@ public class StudentDAO implements GenericDAO<Student, String> {
 
     @Override
     public Student update(Student student) {
-        String sql = "UPDATE " + TABLE_NAME + " SET student_code = ?, first_name = ?, last_name = ?, email = ?, phone = ?, date_of_birth = ?, address = ?, status = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE " + TABLE_NAME
+                + " SET student_code = ?, first_name = ?, last_name = ?, email = ?, phone = ?, date_of_birth = ?, address = ?, current_semester = ?, status = ?, updated_at = ? WHERE id = ?";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -125,9 +129,10 @@ public class StudentDAO implements GenericDAO<Student, String> {
             DatabaseUtils.setNullableParameter(stmt, 5, student.getPhone());
             DatabaseUtils.setNullableParameter(stmt, 6, DatabaseUtils.toSqlDate(student.getDateOfBirth()));
             DatabaseUtils.setNullableParameter(stmt, 7, student.getAddress());
-            stmt.setString(8, student.getStatus());
-            stmt.setTimestamp(9, DatabaseUtils.toSqlTimestamp(student.getUpdatedAt()));
-            stmt.setString(10, student.getId());
+            stmt.setInt(8, student.getCurrentSemester() != null ? student.getCurrentSemester() : 1);
+            stmt.setString(9, student.getStatus());
+            stmt.setTimestamp(10, DatabaseUtils.toSqlTimestamp(student.getUpdatedAt()));
+            stmt.setString(11, student.getId());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -306,6 +311,7 @@ public class StudentDAO implements GenericDAO<Student, String> {
         student.setDateOfBirth(DatabaseUtils.toLocalDate(rs.getDate("date_of_birth")));
         student.setAddress(rs.getString("address"));
         student.setEnrollmentDate(DatabaseUtils.toLocalDate(rs.getDate("enrollment_date")));
+        student.setCurrentSemester(rs.getInt("current_semester"));
         student.setStatus(rs.getString("status"));
         student.setCreatedAt(DatabaseUtils.toLocalDateTime(rs.getTimestamp("created_at")));
         student.setUpdatedAt(DatabaseUtils.toLocalDateTime(rs.getTimestamp("updated_at")));

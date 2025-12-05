@@ -135,7 +135,8 @@ public class UsersView extends VBox {
                 }
             }
         });
-        indexCol.setPrefWidth(50);
+        indexCol.setPrefWidth(20);
+        indexCol.setStyle("-fx-alignment: CENTER; -fx-text-fill: #6b7280;");
 
         TableColumn<User, String> nameCol = new TableColumn<>("NOMBRE");
         nameCol.setCellValueFactory(cellData -> {

@@ -14,13 +14,15 @@ public class Student {
     private LocalDate dateOfBirth;
     private String address;
     private LocalDate enrollmentDate;
-    private String status; // active, inactive, graduated
+    private Integer currentSemester;
+    private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Student() {
         this.id = UUID.randomUUID().toString();
         this.enrollmentDate = LocalDate.now();
+        this.currentSemester = 1;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.status = "active";
@@ -35,41 +37,109 @@ public class Student {
     }
 
     // Getters y Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getStudentCode() { return studentCode; }
-    public void setStudentCode(String studentCode) { this.studentCode = studentCode; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public String getStudentCode() {
+        return studentCode;
+    }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setStudentCode(String studentCode) {
+        this.studentCode = studentCode;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getFirstName() {
+        return firstName;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-    public LocalDate getDateOfBirth() { return dateOfBirth; }
-    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+    public String getLastName() {
+        return lastName;
+    }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-    public LocalDate getEnrollmentDate() { return enrollmentDate; }
-    public void setEnrollmentDate(LocalDate enrollmentDate) { this.enrollmentDate = enrollmentDate; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getPhone() {
+        return phone;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LocalDate getEnrollmentDate() {
+        return enrollmentDate;
+    }
+
+    public void setEnrollmentDate(LocalDate enrollmentDate) {
+        this.enrollmentDate = enrollmentDate;
+    }
+
+    public Integer getCurrentSemester() {
+        return currentSemester;
+    }
+
+    public void setCurrentSemester(Integer currentSemester) {
+        this.currentSemester = currentSemester;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     // Métodos utilitarios
     public String getFullName() {
@@ -77,7 +147,8 @@ public class Student {
     }
 
     public int getAge() {
-        if (dateOfBirth == null) return 0;
+        if (dateOfBirth == null)
+            return 0;
         return LocalDate.now().getYear() - dateOfBirth.getYear();
     }
 
@@ -87,6 +158,17 @@ public class Student {
 
     public boolean isGraduated() {
         return "graduated".equals(status);
+    }
+
+    // Método de validación para inscripción en materias
+    public boolean canEnrollInSubject(Subject subject) {
+        if (subject.getSemesterAvailable() == null) {
+            return true; // Materia sin restricción de semestre
+        }
+        if (this.currentSemester == null) {
+            return false; // Estudiante sin semestre definido
+        }
+        return this.currentSemester >= subject.getSemesterAvailable();
     }
 
     @Override

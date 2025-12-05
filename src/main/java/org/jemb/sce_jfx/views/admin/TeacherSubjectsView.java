@@ -152,7 +152,8 @@ public class TeacherSubjectsView extends VBox {
                 }
             }
         });
-        indexCol.setPrefWidth(50);
+        indexCol.setPrefWidth(20);
+        indexCol.setStyle("-fx-alignment: CENTER; -fx-text-fill: #6b7280;");
 
         TableColumn<TeacherSubject, String> teacherCol = new TableColumn<>("PROFESOR");
         teacherCol.setCellValueFactory(cellData -> {
