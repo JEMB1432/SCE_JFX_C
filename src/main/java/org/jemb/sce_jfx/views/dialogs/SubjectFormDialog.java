@@ -1,4 +1,4 @@
-package org.jemb.sce_jfx.views.admin;
+package org.jemb.sce_jfx.views.dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -43,6 +43,8 @@ public class SubjectFormDialog extends Dialog<Subject> {
         createCompactForm();
         setupValidation();
         setupResult();
+
+        DialogUtils.setDialogIcon(this);
 
         if (isEditMode) {
             loadExistingData();

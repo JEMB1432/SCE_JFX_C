@@ -37,27 +37,22 @@ public class EnrollStudentDialog extends Dialog<Enrollment> {
         setTitle("Inscribir Estudiante");
         setHeaderText("Inscribir estudiante en: " + teacherSubject.getSubject().getName());
 
-        // Cargar estilos
         getDialogPane().getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm());
 
-        // Botones
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        DialogUtils.setDialogIcon(this);
 
-        // Contenido
         VBox content = createContent();
         getDialogPane().setContent(content);
 
-        // Configurar el tamaño
         getDialogPane().setPrefSize(500, 300);
 
-        // Validación y resultado
         setupValidation();
         setResultConverter(this::convertResult);
 
-        // Cargar estudiantes
         loadStudents();
     }
 

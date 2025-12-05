@@ -15,6 +15,7 @@ import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.EnrollmentController;
 import org.jemb.sce_jfx.models.Enrollment;
+import org.jemb.sce_jfx.views.dialogs.EnrollmentFormDialog;
 
 import java.time.format.DateTimeFormatter;
 
@@ -58,6 +59,10 @@ public class EnrollmentsView extends VBox {
 
         getChildren().add(content);
 
+        loadEnrollments();
+    }
+
+    public void refresh() {
         loadEnrollments();
     }
 

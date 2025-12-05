@@ -37,23 +37,19 @@ public class GradeFormDialog extends Dialog<Grade> {
         setTitle("Calificar Estudiante");
         setHeaderText("Estudiante: " + enrollment.getStudent().getFullName());
 
-        // Estilos
         getDialogPane().getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm());
 
-        // Botones
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        // Contenido
         VBox content = createContent();
+        DialogUtils.setDialogIcon(this);
         getDialogPane().setContent(content);
 
-        // Tamaño
         getDialogPane().setPrefSize(550, 400);
 
-        // Validación
         setupValidation();
         setResultConverter(this::convertResult);
     }

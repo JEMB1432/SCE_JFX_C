@@ -35,24 +35,20 @@ public class EvaluationTypesDialog extends Dialog<ButtonType> {
         setTitle("Tipos de Evaluación");
         setHeaderText("Gestionar evaluaciones de: " + teacherSubject.getSubject().getName());
 
-        // Cargar estilos
         getDialogPane().getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/tables.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm());
 
-        // Botón
         getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 
-        // Contenido
         VBox content = createContent();
+        DialogUtils.setDialogIcon(this);
         getDialogPane().setContent(content);
 
-        // Tamaño
         getDialogPane().setPrefSize(800, 600);
 
-        // Cargar tipos de evaluación
         loadEvaluationTypes();
     }
 

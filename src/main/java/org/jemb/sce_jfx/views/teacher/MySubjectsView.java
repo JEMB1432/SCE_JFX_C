@@ -53,6 +53,11 @@ public class MySubjectsView extends VBox {
         loadSubjects();
     }
 
+    public void refresh() {
+        loadPeriods();
+        loadSubjects();
+    }
+
     private VBox createHeader() {
         Label title = new Label("Mis Materias");
         title.getStyleClass().add("view-title");
@@ -82,7 +87,7 @@ public class MySubjectsView extends VBox {
 
         Button refreshButton = new Button("🔄 Actualizar");
         refreshButton.getStyleClass().add("secondary-button");
-        refreshButton.setOnAction(e -> loadSubjects());
+        refreshButton.setOnAction(e -> refresh());
 
         HBox filters = new HBox(15, periodLabel, periodFilter, refreshButton);
         filters.setAlignment(Pos.CENTER_LEFT);
@@ -212,10 +217,17 @@ public class MySubjectsView extends VBox {
                     .sorted()
                     .toList();
 
+            String currentSelection = periodFilter.getValue();
+
             periodFilter.getItems().clear();
             periodFilter.getItems().add("Todos");
             periodFilter.getItems().addAll(periods);
-            periodFilter.setValue("Todos");
+
+            if (currentSelection != null && periodFilter.getItems().contains(currentSelection)) {
+                periodFilter.setValue(currentSelection);
+            } else {
+                periodFilter.setValue("Todos");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -247,12 +259,15 @@ public class MySubjectsView extends VBox {
     private void showEnrollStudentDialog(TeacherSubject teacherSubject) {
         EnrollStudentDialog dialog = new EnrollStudentDialog(teacherSubject);
         dialog.showAndWait();
-        // Recargar para reflejar cambios si es necesario
+        // Recargar para reflejar cambios
+        refresh();
     }
 
     private void showEvaluationTypesDialog(TeacherSubject teacherSubject) {
         EvaluationTypesDialog dialog = new EvaluationTypesDialog(teacherSubject);
         dialog.showAndWait();
+        // Recargar para reflejar cambios
+        refresh();
     }
 
     private String getStatusText(String status) {

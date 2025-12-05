@@ -17,7 +17,7 @@ import org.jemb.sce_jfx.models.TeacherSubject;
 public class EvaluationTypeFormDialog extends Dialog<EvaluationType> {
 
     private final TeacherSubject teacherSubject;
-    private final EvaluationType evaluationType; // null si es nuevo
+    private final EvaluationType evaluationType;
     private final EvaluationTypeController controller;
 
     private TextField nameField;
@@ -35,23 +35,19 @@ public class EvaluationTypeFormDialog extends Dialog<EvaluationType> {
         setTitle(isEdit ? "Editar Tipo de Evaluación" : "Nuevo Tipo de Evaluación");
         setHeaderText("Materia: " + teacherSubject.getSubject().getName());
 
-        // Estilos
         getDialogPane().getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm());
 
-        // Botones
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        // Contenido
         VBox content = createContent();
+        DialogUtils.setDialogIcon(this);
         getDialogPane().setContent(content);
 
-        // Tamaño
         getDialogPane().setPrefSize(500, 400);
 
-        // Validación
         setupValidation();
         setResultConverter(this::convertResult);
     }

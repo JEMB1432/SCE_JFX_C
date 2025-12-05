@@ -15,7 +15,7 @@ import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.StudentController;
 import org.jemb.sce_jfx.models.Student;
-import org.jemb.sce_jfx.models.Subject;
+import org.jemb.sce_jfx.views.dialogs.StudentFormDialog;
 import org.jemb.sce_jfx.views.dialogs.StudentPerformanceDialog;
 
 import java.time.format.DateTimeFormatter;
@@ -58,6 +58,10 @@ public class StudentsView extends VBox {
 
         getChildren().add(content);
 
+        loadStudents();
+    }
+
+    public void refresh() {
         loadStudents();
     }
 

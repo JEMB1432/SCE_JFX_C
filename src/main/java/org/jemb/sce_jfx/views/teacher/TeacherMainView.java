@@ -25,15 +25,19 @@ public class TeacherMainView extends HBox {
         initializeViews();
         setupLayout();
         applyStyles();
+
+        setMaxWidth(Double.MAX_VALUE);
+        setMaxHeight(Double.MAX_VALUE);
+
+        contentArea.setMaxWidth(Double.MAX_VALUE);
+        contentArea.setMaxHeight(Double.MAX_VALUE);
     }
 
     private void initializeViews() {
-        //views.put("Dashboard", new TeacherDashboardView());
         views.put("Mis Materias", new MySubjectsView());
         views.put("Calificaciones", new GradesView());
         views.put("Reportes", new ReportsView());
         views.put("Gráficas de Rendimiento", new PerformanceChartsView());
-
         views.put("Mi Perfil", new ProfileView());
     }
 
@@ -46,6 +50,9 @@ public class TeacherMainView extends HBox {
         getChildren().addAll(sidebar, contentArea);
         HBox.setHgrow(contentArea, Priority.ALWAYS);
         setSpacing(0);
+
+        contentArea.prefWidthProperty().bind(widthProperty().subtract(sidebar.widthProperty()));
+        contentArea.prefHeightProperty().bind(heightProperty());
     }
 
     private void applyStyles() {
@@ -70,9 +77,21 @@ public class TeacherMainView extends HBox {
 
         if (view != null && !viewName.equals(currentView)) {
             contentArea.getChildren().clear();
-
             contentArea.getChildren().add(view);
             currentView = viewName;
+
+            refreshCurrentView(view);
+        }
+    }
+
+    private void refreshCurrentView(Node view) {
+        try {
+            var refreshMethod = view.getClass().getMethod("refresh");
+            refreshMethod.invoke(view);
+        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
+            System.err.println("Error al refrescar la vista: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -85,13 +104,9 @@ public class TeacherMainView extends HBox {
     }
 
     private void goBackToLogin() {
-        try {
+        Platform.runLater(() -> {
             Stage stage = (Stage) this.getScene().getWindow();
-            App app = new App();
-            app.start(stage);
-        } catch (Exception e) {
-            System.err.println("Error al volver al login: " + e.getMessage());
-            e.printStackTrace();
-        }
+            App.showLoginView(stage);
+        });
     }
 }

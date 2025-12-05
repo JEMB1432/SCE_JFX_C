@@ -1,9 +1,11 @@
 package org.jemb.sce_jfx.views.dialogs;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -33,41 +35,49 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
         this.performanceService = new PerformanceService();
 
         setTitle("Rendimiento Académico");
-        setHeaderText("Rendimiento de " + student.getFullName());
+        setHeaderText(null);
 
-        // Configurar botones
         getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 
-        // Cargar estilos
         getDialogPane().getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm());
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/components/dialogs.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/tabs.css").toExternalForm());
 
-        // Crear contenido
         VBox content = createContent();
+        DialogUtils.setDialogIcon(this);
         getDialogPane().setContent(content);
 
-        // Configurar tamaño
-        getDialogPane().setPrefSize(950, 650);
-        getDialogPane().setMinSize(800, 500);
+        getDialogPane().setPrefSize(1000, 700);
+        getDialogPane().setMinSize(900, 600);
+
+        getDialogPane().getStyleClass().add("dialog-pane");
+
+        Button closeButton = (Button) getDialogPane().lookupButton(ButtonType.CLOSE);
+        if (closeButton != null) {
+            closeButton.getStyleClass().addAll("cancel-button");
+        }
     }
 
     private VBox createContent() {
-        VBox container = new VBox(15);
-        container.setPadding(new Insets(20));
+        VBox container = new VBox(20);
+        container.setPadding(new Insets(24));
+        container.setStyle("-fx-background-color: white;");
 
-        // Verificar si el estudiante tiene calificaciones
+        VBox header = createCustomHeader();
+
         if (!performanceService.hasGrades(student.getId())) {
-            Label noDataLabel = new Label("Este estudiante aún no tiene calificaciones registradas.");
-            noDataLabel.setFont(Font.font("System", FontWeight.NORMAL, 16));
-            noDataLabel.setStyle("-fx-text-fill: #6b7280;");
-            container.getChildren().add(noDataLabel);
+            VBox emptyState = createEmptyState();
+            container.getChildren().addAll(header, emptyState);
             return container;
         }
 
-        // Crear pestañas con gráficos
+        HBox statsBox = createStatsBox();
+
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        tabPane.getStyleClass().add("tab-pane");
 
         subjectChartTab = createSubjectChartTab();
         evaluationTypeChartTab = createEvaluationTypeChartTab();
@@ -75,24 +85,118 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
 
         tabPane.getTabs().addAll(subjectChartTab, evaluationTypeChartTab, progressChartTab);
 
-        // Información general
-        Label infoLabel = createInfoLabel();
-
-        container.getChildren().addAll(infoLabel, tabPane);
+        container.getChildren().addAll(header, statsBox, tabPane);
         VBox.setVgrow(tabPane, javafx.scene.layout.Priority.ALWAYS);
 
         return container;
     }
 
-    private Label createInfoLabel() {
+    /**
+     * Header personalizado con título y nombre del estudiante
+     */
+    private VBox createCustomHeader() {
+        VBox header = new VBox(4);
+
+        Label titleLabel = new Label("Rendimiento Académico");
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #111827;");
+
+        Label studentLabel = new Label(student.getFullName());
+        studentLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #6b7280;");
+
+        header.getChildren().addAll(titleLabel, studentLabel);
+
+        return header;
+    }
+
+    /**
+     * Estado vacío cuando no hay calificaciones
+     */
+    private VBox createEmptyState() {
+        VBox emptyState = new VBox(12);
+        emptyState.setAlignment(Pos.CENTER);
+        emptyState.setPadding(new Insets(60, 20, 60, 20));
+        emptyState.setStyle("-fx-background-color: #f9f9f9; -fx-background-radius: 12px;");
+
+        Label icon = new Label("📊");
+        icon.setStyle("-fx-font-size: 48px;");
+
+        Label message = new Label("Sin calificaciones registradas");
+        message.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #111827;");
+
+        Label subMessage = new Label("Este estudiante aún no tiene calificaciones en el sistema");
+        subMessage.setStyle("-fx-font-size: 14px; -fx-text-fill: #6b7280;");
+
+        emptyState.getChildren().addAll(icon, message, subMessage);
+        VBox.setVgrow(emptyState, javafx.scene.layout.Priority.ALWAYS);
+
+        return emptyState;
+    }
+
+    /**
+     * Caja de estadísticas con cards
+     */
+    private HBox createStatsBox() {
+        HBox statsBox = new HBox(16);
+        statsBox.setAlignment(Pos.CENTER_LEFT);
+
         double overallAvg = performanceService.getOverallAverage(student.getId());
-        String avgText = String.format("Promedio General: %.2f", overallAvg);
+        List<SubjectPerformance> subjects = performanceService.getSubjectSummary(student.getId());
 
-        Label label = new Label(avgText);
-        label.setFont(Font.font("System", FontWeight.BOLD, 14));
-        label.setStyle("-fx-text-fill: #1f2937; -fx-padding: 10 0;");
+        // Card de promedio general
+        VBox avgCard = createStatCard("Promedio General", String.format("%.2f", overallAvg), "#2f5856");
 
-        return label;
+        // Card de materias
+        VBox subjectsCard = createStatCard("Materias", String.valueOf(subjects.size()), "#1C7C54");
+
+        // Card de mejor materia
+        if (!subjects.isEmpty()) {
+            SubjectPerformance best = subjects.stream()
+                    .max((s1, s2) -> Double.compare(s1.getAverageScore(), s2.getAverageScore()))
+                    .orElse(subjects.get(0));
+
+            VBox bestCard = createStatCard("Mejor Materia",
+                    best.getSubjectCode() + " (" + String.format("%.1f", best.getAverageScore()) + ")",
+                    "#10b981");
+
+            statsBox.getChildren().addAll(avgCard, subjectsCard, bestCard);
+        } else {
+            statsBox.getChildren().addAll(avgCard, subjectsCard);
+        }
+
+        return statsBox;
+    }
+
+    /**
+     * Crea una tarjeta de estadística
+     */
+    private VBox createStatCard(String label, String value, String accentColor) {
+        VBox card = new VBox(8);
+        card.setPadding(new Insets(16));
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-background-radius: 8px; " +
+                        "-fx-border-color: #e6e6e6; " +
+                        "-fx-border-radius: 8px; " +
+                        "-fx-border-width: 1px; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 8, 0, 0, 2);"
+        );
+        card.setPrefWidth(200);
+        card.setMinHeight(80);
+
+        Label labelText = new Label(label);
+        labelText.setStyle("-fx-font-size: 13px; -fx-text-fill: #6b7280; -fx-font-weight: 500;");
+
+        Label valueText = new Label(value);
+        valueText.setStyle(
+                "-fx-font-size: 24px; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-text-fill: " + accentColor + ";"
+        );
+
+        card.getChildren().addAll(labelText, valueText);
+
+        return card;
     }
 
     /**
@@ -124,11 +228,8 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
 
         barChart.getData().add(series);
 
-        // Aplicar colores a las barras
-        barChart.setStyle("-fx-bar-fill: #3b82f6;");
-
         VBox container = new VBox(barChart);
-        container.setPadding(new Insets(10));
+        container.setPadding(new Insets(20));
         VBox.setVgrow(barChart, javafx.scene.layout.Priority.ALWAYS);
 
         tab.setContent(container);
@@ -154,7 +255,7 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
             pieChart.getData().add(slice);
         });
 
-        // Mostrar porcentajes
+        // Mostrar tooltips con información detallada
         pieChart.getData().forEach(data -> {
             String percentage = String.format("%.1f", data.getPieValue());
             Tooltip tooltip = new Tooltip(data.getName() + "\nCalificación: " + percentage);
@@ -162,7 +263,7 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
         });
 
         VBox container = new VBox(pieChart);
-        container.setPadding(new Insets(10));
+        container.setPadding(new Insets(20));
         VBox.setVgrow(pieChart, javafx.scene.layout.Priority.ALWAYS);
 
         tab.setContent(container);
@@ -211,7 +312,7 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
 
         lineChart.getData().addAll(seriesMap.values());
 
-        // Agregar tooltips
+        // Agregar tooltips con estilo personalizado
         for (XYChart.Series<String, Number> series : lineChart.getData()) {
             for (XYChart.Data<String, Number> data : series.getData()) {
                 Tooltip tooltip = new Tooltip(
@@ -223,7 +324,7 @@ public class StudentPerformanceDialog extends Dialog<ButtonType> {
         }
 
         VBox container = new VBox(lineChart);
-        container.setPadding(new Insets(10));
+        container.setPadding(new Insets(20));
         VBox.setVgrow(lineChart, javafx.scene.layout.Priority.ALWAYS);
 
         tab.setContent(container);

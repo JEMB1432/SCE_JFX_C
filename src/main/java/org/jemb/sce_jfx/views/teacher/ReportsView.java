@@ -39,11 +39,11 @@ public class ReportsView extends VBox {
         currentUser = UserSession.getInstance().getCurrentUser();
         subjectsList = FXCollections.observableArrayList();
 
-        // Cargar estilos
         getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm());
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm()
+        );
 
         setPadding(new Insets(30));
         setSpacing(20);
@@ -51,9 +51,16 @@ public class ReportsView extends VBox {
         getChildren().addAll(
                 createHeader(),
                 createReportForm(),
-                createStatusSection());
+                createStatusSection()
+        );
 
         loadSubjects();
+    }
+
+    public void refresh() {
+        loadSubjects();
+        statusLabel.setText("Selecciona una materia para ver los detalles del reporte.");
+        statusLabel.setStyle("-fx-text-fill: #6b7280;");
     }
 
     private VBox createHeader() {

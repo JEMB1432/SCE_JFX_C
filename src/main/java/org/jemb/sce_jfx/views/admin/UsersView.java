@@ -16,6 +16,7 @@ import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.UserController;
 import org.jemb.sce_jfx.models.User;
 import org.jemb.sce_jfx.utils.UserSession;
+import org.jemb.sce_jfx.views.dialogs.UserFormDialog;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +42,8 @@ public class UsersView extends VBox {
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/tables.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm());
+                getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm()
+        );
 
         controller = new UserController();
 
@@ -59,6 +61,10 @@ public class UsersView extends VBox {
 
         getChildren().add(content);
 
+        loadUsers();
+    }
+
+    public void refresh() {
         loadUsers();
     }
 

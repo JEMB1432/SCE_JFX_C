@@ -15,8 +15,8 @@ import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.EnrollmentController;
 import org.jemb.sce_jfx.controllers.SubjectController;
-import org.jemb.sce_jfx.models.Student;
 import org.jemb.sce_jfx.models.Subject;
+import org.jemb.sce_jfx.views.dialogs.SubjectFormDialog;
 
 public class SubjectsView extends VBox {
 
@@ -61,6 +61,10 @@ public class SubjectsView extends VBox {
 
         getChildren().add(content);
 
+        loadSubjects();
+    }
+
+    public void refresh() {
         loadSubjects();
     }
 

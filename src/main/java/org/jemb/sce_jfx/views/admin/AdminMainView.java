@@ -36,7 +36,6 @@ public class AdminMainView extends HBox {
     }
 
     private void initializeViews() {
-        views.put("Dashboard", new DashboardView());
         views.put("Estudiantes", new StudentsView());
         views.put("Materias", new SubjectsView());
         views.put("Asignar Materias", new TeacherSubjectsView());

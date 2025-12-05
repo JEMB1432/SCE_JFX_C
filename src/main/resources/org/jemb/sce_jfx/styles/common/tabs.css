@@ -1,0 +1,199 @@
+
+.tab-pane {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+}
+
+.tab-pane .tab-header-area {
+    -fx-background-color: white;
+    -fx-padding: 0 0 0 0;
+}
+
+.tab-pane .tab-header-background {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #e6e6e6;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 12px 24px;
+    -fx-border-color: transparent;
+}
+
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-alignment: center;
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: rgba(47, 88, 86, 0.05);
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: white;
+    -fx-border-color: #2f5856;
+    -fx-border-width: 0 0 3px 0;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #2f5856;
+    -fx-font-weight: 600;
+}
+
+.tab-pane .tab-content-area {
+    -fx-background-color: white;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.tab-pane .tab:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane .tab .tab-close-button {
+    -fx-background-color: transparent;
+}
+
+/* ==================== GRÁFICAS ==================== */
+
+.chart-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #111827;
+    -fx-padding: 0 0 12px 0;
+}
+
+.chart-legend {
+    -fx-background-color: white;
+    -fx-padding: 8px;
+    -fx-font-size: 12px;
+}
+
+.chart-legend-item {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+.chart-content {
+    -fx-padding: 16px;
+}
+
+.axis {
+    -fx-tick-label-fill: #6b7280;
+    -fx-font-size: 11px;
+}
+
+.axis-label {
+    -fx-text-fill: #111827;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+}
+
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines {
+    -fx-stroke: #e6e6e6;
+    -fx-stroke-width: 0.5px;
+}
+
+.default-color0.chart-bar {
+    -fx-bar-fill: #2f5856;
+}
+
+.default-color1.chart-bar {
+    -fx-bar-fill: #1C7C54;
+}
+
+.default-color2.chart-bar {
+    -fx-bar-fill: #10b981;
+}
+
+.default-color0.chart-series-line {
+    -fx-stroke: #2f5856;
+    -fx-stroke-width: 2px;
+}
+
+.default-color1.chart-series-line {
+    -fx-stroke: #1C7C54;
+    -fx-stroke-width: 2px;
+}
+
+.default-color2.chart-series-line {
+    -fx-stroke: #10b981;
+    -fx-stroke-width: 2px;
+}
+
+.default-color3.chart-series-line {
+    -fx-stroke: #8b5cf6;
+    -fx-stroke-width: 2px;
+}
+
+.default-color4.chart-series-line {
+    -fx-stroke: #f59e0b;
+    -fx-stroke-width: 2px;
+}
+
+/* Símbolos en líneas */
+.chart-line-symbol {
+    -fx-background-color: white, #2f5856;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.default-color0.chart-line-symbol {
+    -fx-background-color: white, #2f5856;
+}
+
+.default-color1.chart-line-symbol {
+    -fx-background-color: white, #1C7C54;
+}
+
+.default-color2.chart-line-symbol {
+    -fx-background-color: white, #10b981;
+}
+
+.default-color3.chart-line-symbol {
+    -fx-background-color: white, #8b5cf6;
+}
+
+.default-color4.chart-line-symbol {
+    -fx-background-color: white, #f59e0b;
+}
+
+/* Colores para gráficos de pastel */
+.default-color0.chart-pie {
+    -fx-pie-color: #2f5856;
+}
+
+.default-color1.chart-pie {
+    -fx-pie-color: #1C7C54;
+}
+
+.default-color2.chart-pie {
+    -fx-pie-color: #10b981;
+}
+
+.default-color3.chart-pie {
+    -fx-pie-color: #8b5cf6;
+}
+
+.default-color4.chart-pie {
+    -fx-pie-color: #f59e0b;
+}
+
+.default-color5.chart-pie {
+    -fx-pie-color: #06b6d4;
+}
+
+.chart-tooltip {
+    -fx-background-color: rgba(17, 24, 39, 0.95);
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+}

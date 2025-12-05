@@ -1,11 +1,13 @@
-package org.jemb.sce_jfx.views.admin;
+package org.jemb.sce_jfx.views.dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 import org.jemb.sce_jfx.controllers.EnrollmentController;
 import org.jemb.sce_jfx.controllers.StudentController;
 import org.jemb.sce_jfx.controllers.SubjectController;
@@ -52,6 +54,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         setupValidation();
         setupResult();
 
+        DialogUtils.setDialogIcon(this);
         // Cargar materias inicialmente (todas las activas si no hay estudiante
         // seleccionado)
         updateSubjectCombo();

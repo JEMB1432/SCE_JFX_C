@@ -65,6 +65,11 @@ public class GradesView extends HBox {
         loadSubjects();
     }
 
+    public void refresh() {
+        loadEnrollments();
+        loadSubjects();
+    }
+
     private void setupLayout() {
         // Sidebar izquierdo
         VBox sidebar = createSidebar();

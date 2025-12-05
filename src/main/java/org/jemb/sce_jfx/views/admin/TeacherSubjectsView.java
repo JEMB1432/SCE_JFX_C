@@ -14,8 +14,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import org.jemb.sce_jfx.controllers.TeacherSubjectController;
-import org.jemb.sce_jfx.models.Subject;
 import org.jemb.sce_jfx.models.TeacherSubject;
+import org.jemb.sce_jfx.views.dialogs.TeacherSubjectFormDialog;
 
 public class TeacherSubjectsView extends VBox {
 
@@ -39,7 +39,8 @@ public class TeacherSubjectsView extends VBox {
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/tables.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm());
+                getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm()
+        );
 
         controller = new TeacherSubjectController();
 
@@ -57,6 +58,10 @@ public class TeacherSubjectsView extends VBox {
 
         getChildren().add(content);
 
+        loadAssignments();
+    }
+
+    public void refresh() {
         loadAssignments();
     }
 

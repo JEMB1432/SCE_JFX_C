@@ -47,10 +47,10 @@ public class PerformanceChartsView extends VBox {
         currentUser = UserSession.getInstance().getCurrentUser();
         subjectsList = FXCollections.observableArrayList();
 
-        // Cargar estilos
         getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm());
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm()
+        );
 
         setPadding(new Insets(30));
         setSpacing(20);
@@ -61,6 +61,13 @@ public class PerformanceChartsView extends VBox {
                 createChartsSection());
 
         loadSubjects();
+    }
+
+    public void refresh() {
+        loadSubjects();
+        if (subjectCombo.getSelectionModel().getSelectedItem() != null) {
+            onSubjectSelected();
+        }
     }
 
     private VBox createHeader() {

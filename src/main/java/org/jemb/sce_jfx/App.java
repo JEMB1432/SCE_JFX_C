@@ -3,6 +3,7 @@ package org.jemb.sce_jfx;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.jemb.sce_jfx.config.DatabaseConfig;
 import org.jemb.sce_jfx.models.User;
@@ -31,15 +32,15 @@ public class App extends Application {
                     loadAdminView(stage);
                 } else if (currentUser.isTeacher()) {
                     loadTeacherView(stage);
-                } else {
-                    // TODO: Cargar vista de asistente
-                    System.out.println("Vista de asistente próximamente");
                 }
             }
         });
 
         Scene scene = new Scene(loginView);
         stage.setTitle("Sistema de Control de Estudiantes - Iniciar Sesión");
+        stage.getIcons().addAll(
+                new Image(getClass().getResourceAsStream("/org/jemb/sce_jfx/icons/logoDark.png"))
+        );
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
