@@ -72,8 +72,9 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
     @Override
     public Enrollment save(Enrollment enrollment) {
         String sql = "INSERT INTO " + TABLE_NAME
-                + " (id, student_id, subject_id, academic_year, semester, enrollment_date, status, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                + " (id, student_id, subject_id, teacher_id, academic_year, semester, enrollment_date, status, created_at) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -85,11 +86,12 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
             stmt.setString(1, enrollment.getId());
             stmt.setString(2, enrollment.getStudentId());
             stmt.setString(3, enrollment.getSubjectId());
-            stmt.setString(4, enrollment.getAcademicYear());
-            stmt.setInt(5, enrollment.getSemester());
-            stmt.setDate(6, DatabaseUtils.toSqlDate(enrollment.getEnrollmentDate()));
-            stmt.setString(7, enrollment.getStatus());
-            stmt.setTimestamp(8, DatabaseUtils.toSqlTimestamp(enrollment.getCreatedAt()));
+            DatabaseUtils.setNullableParameter(stmt, 4, enrollment.getTeacherId());
+            stmt.setString(5, enrollment.getAcademicYear());
+            stmt.setInt(6, enrollment.getSemester());
+            stmt.setDate(7, DatabaseUtils.toSqlDate(enrollment.getEnrollmentDate()));
+            stmt.setString(8, enrollment.getStatus());
+            stmt.setTimestamp(9, DatabaseUtils.toSqlTimestamp(enrollment.getCreatedAt()));
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -109,7 +111,7 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
     @Override
     public Enrollment update(Enrollment enrollment) {
         String sql = "UPDATE " + TABLE_NAME
-                + " SET student_id = ?, subject_id = ?, academic_year = ?, semester = ?, enrollment_date = ?, status = ? WHERE id = ?";
+                + " SET student_id = ?, subject_id = ?, teacher_id = ?, academic_year = ?, semester = ?, enrollment_date = ?, status = ? WHERE id = ?";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -120,11 +122,12 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
 
             stmt.setString(1, enrollment.getStudentId());
             stmt.setString(2, enrollment.getSubjectId());
-            stmt.setString(3, enrollment.getAcademicYear());
-            stmt.setInt(4, enrollment.getSemester());
-            stmt.setDate(5, DatabaseUtils.toSqlDate(enrollment.getEnrollmentDate()));
-            stmt.setString(6, enrollment.getStatus());
-            stmt.setString(7, enrollment.getId());
+            DatabaseUtils.setNullableParameter(stmt, 3, enrollment.getTeacherId());
+            stmt.setString(4, enrollment.getAcademicYear());
+            stmt.setInt(5, enrollment.getSemester());
+            stmt.setDate(6, DatabaseUtils.toSqlDate(enrollment.getEnrollmentDate()));
+            stmt.setString(7, enrollment.getStatus());
+            stmt.setString(8, enrollment.getId());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -361,15 +364,47 @@ public class EnrollmentDAO implements GenericDAO<Enrollment, String> {
         return enrollments;
     }
 
+    public List<Enrollment> findByTeacherSubjectYearSemester(String teacherId, String subjectId,
+            String academicYear, int semester) {
+        List<Enrollment> enrollments = new ArrayList<>();
+        String sql = "SELECT * FROM " + TABLE_NAME
+                + " WHERE teacher_id = ? AND subject_id = ? AND academic_year = ? AND semester = ? AND status = 'enrolled' ORDER BY enrollment_date DESC";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseConfig.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, teacherId);
+            stmt.setString(2, subjectId);
+            stmt.setString(3, academicYear);
+            stmt.setInt(4, semester);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                enrollments.add(mapResultSetToEnrollment(rs, true));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding enrollments by teacher, subject, year and semester: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            DatabaseUtils.closeQuietly(rs, stmt, conn);
+        }
+
+        return enrollments;
+    }
+
     // Mapeo de ResultSet a Enrollment
     private Enrollment mapResultSetToEnrollment(ResultSet rs, boolean loadRelations) throws SQLException {
         Enrollment enrollment = new Enrollment();
         enrollment.setId(rs.getString("id"));
         enrollment.setStudentId(rs.getString("student_id"));
         enrollment.setSubjectId(rs.getString("subject_id"));
+        enrollment.setTeacherId(rs.getString("teacher_id"));
         enrollment.setAcademicYear(rs.getString("academic_year"));
         enrollment.setSemester(rs.getInt("semester"));
-        // Campo teacher_id ignorado - no se usa en la aplicación
         enrollment.setEnrollmentDate(DatabaseUtils.toLocalDate(rs.getDate("enrollment_date")));
         enrollment.setStatus(rs.getString("status"));
         enrollment.setCreatedAt(DatabaseUtils.toLocalDateTime(rs.getTimestamp("created_at")));

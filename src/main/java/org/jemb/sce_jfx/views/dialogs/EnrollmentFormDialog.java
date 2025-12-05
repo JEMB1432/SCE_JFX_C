@@ -11,9 +11,8 @@ import javafx.stage.Stage;
 import org.jemb.sce_jfx.controllers.EnrollmentController;
 import org.jemb.sce_jfx.controllers.StudentController;
 import org.jemb.sce_jfx.controllers.SubjectController;
-import org.jemb.sce_jfx.models.Enrollment;
-import org.jemb.sce_jfx.models.Student;
-import org.jemb.sce_jfx.models.Subject;
+import org.jemb.sce_jfx.controllers.TeacherSubjectController;
+import org.jemb.sce_jfx.models.*;
 import org.jemb.sce_jfx.utils.FormValidator;
 
 import java.time.LocalDate;
@@ -24,12 +23,14 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
     private final EnrollmentController enrollmentController;
     private final StudentController studentController;
     private final SubjectController subjectController;
+    private final TeacherSubjectController teacherSubjectController;
     private final Enrollment existingEnrollment;
     private final boolean isEditMode;
 
     // Campos del formulario
     private ComboBox<Student> studentCombo;
     private ComboBox<Subject> subjectCombo;
+    private ComboBox<User> teacherCombo;
     private TextField academicYearField;
     private ComboBox<Integer> semesterCombo;
     private DatePicker enrollmentDatePicker;
@@ -38,6 +39,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
     // Labels de error
     private Label studentError;
     private Label subjectError;
+    private Label teacherError;
     private Label academicYearError;
     private Label semesterError;
     private Label enrollmentDateError;
@@ -46,6 +48,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         this.enrollmentController = new EnrollmentController();
         this.studentController = new StudentController();
         this.subjectController = new SubjectController();
+        this.teacherSubjectController = new TeacherSubjectController();
         this.existingEnrollment = enrollment;
         this.isEditMode = (enrollment != null);
 
@@ -109,6 +112,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
         studentError = createErrorLabel();
         subjectError = createErrorLabel();
+        teacherError = createErrorLabel();
         academicYearError = createErrorLabel();
         semesterError = createErrorLabel();
         enrollmentDateError = createErrorLabel();
@@ -143,6 +147,11 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
                     createStatusCombo(),
                     createErrorLabel());
             formGrid.add(statusSection, 1, 2);
+        } else {
+            VBox teacherSection = createLabeledField("Profesor *",
+                    createTeacherCombo(),
+                    teacherError);
+            formGrid.add(teacherSection, 1, 2);
         }
 
         if (isEditMode) {
@@ -162,6 +171,37 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         formContainer.getChildren().add(noteLabel);
 
         getDialogPane().setContent(formContainer);
+    }
+
+    private ComboBox<User> createTeacherCombo() {
+        teacherCombo = new ComboBox<>();
+        teacherCombo.setCellFactory(param -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getFirstName() + " " + item.getLastName());
+                }
+            }
+        });
+        teacherCombo.setButtonCell(new ListCell<User>() {
+            @Override
+            protected void updateItem(User item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getFirstName() + " " + item.getLastName());
+                }
+            }
+        });
+        teacherCombo.setPromptText("Seleccione un profesor");
+        teacherCombo.getStyleClass().add("form-field");
+        teacherCombo.setPrefHeight(35);
+        teacherCombo.setMaxWidth(Double.MAX_VALUE);
+        return teacherCombo;
     }
 
     private VBox createLabeledField(String labelText, Control field, Label errorLabel) {
@@ -316,25 +356,73 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         }
     }
 
+    private void loadTeachersForSubject() {
+        if (isEditMode || teacherCombo == null) {
+            return;
+        }
+        teacherCombo.getItems().clear();
+        Subject selectedSubject = subjectCombo.getValue();
+        String academicYear = academicYearField.getText().trim();
+        Integer semester = semesterCombo.getValue();
+        if (selectedSubject == null || academicYear.isEmpty() || semester == null) {
+            return;
+        }
+        // Validar formato de año antes de buscar
+        if (!academicYear.matches("\\d{4}-\\d{4}")) {
+            return;
+        }
+        try {
+            // Obtener asignaciones de profesores para esta materia
+            List<TeacherSubject> assignments = teacherSubjectController
+                    .getAssignmentsBySubject(selectedSubject.getId());
+            // Filtrar por año académico y semestre
+            List<User> availableTeachers = assignments.stream()
+                    .filter(ts -> ts.getAcademicYear().equals(academicYear) &&
+                            ts.getSemester() == semester &&
+                            ts.getStatus().equals("active"))
+                    .map(TeacherSubject::getTeacher)
+                    .filter(teacher -> teacher != null)
+                    .distinct()
+                    .collect(Collectors.toList());
+            teacherCombo.getItems().addAll(availableTeachers);
+            // Si solo hay un profesor, seleccionarlo automáticamente
+            if (availableTeachers.size() == 1) {
+                teacherCombo.setValue(availableTeachers.get(0));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setupValidation() {
         studentCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateStudent();
             updateSubjectCombo();
             subjectCombo.setValue(null);
         });
-
         subjectCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateSubject();
+            if (!isEditMode) {
+                loadTeachersForSubject();
+            }
         });
-
         academicYearField.textProperty().addListener((obs, oldVal, newVal) -> {
             validateAcademicYear();
+            if (!isEditMode) {
+                loadTeachersForSubject();
+            }
         });
-
         semesterCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateSemester();
+            if (!isEditMode) {
+                loadTeachersForSubject();
+            }
         });
-
+        if (!isEditMode && teacherCombo != null) {
+            teacherCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+                validateTeacher();
+            });
+        }
         enrollmentDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateEnrollmentDate();
         });
@@ -357,6 +445,20 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
         }
 
         clearError(subjectCombo, subjectError);
+        return true;
+    }
+
+    private boolean validateTeacher() {
+        if (isEditMode) {
+            return true;
+        }
+        if (teacherCombo == null || teacherCombo.getValue() == null) {
+            if (teacherCombo != null) {
+                showError(teacherCombo, teacherError, "Debe seleccionar un profesor");
+            }
+            return false;
+        }
+        clearError(teacherCombo, teacherError);
         return true;
     }
 
@@ -428,6 +530,7 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
         valid &= validateStudent();
         valid &= validateSubject();
+        valid &= validateTeacher();
         valid &= validateAcademicYear();
         valid &= validateSemester();
         valid &= validateEnrollmentDate();
@@ -495,11 +598,14 @@ public class EnrollmentFormDialog extends Dialog<Enrollment> {
 
                         return updatedEnrollment;
                     } else {
+                        String teacherId = teacherCombo.getValue().getId();
                         enrollment = enrollmentController.enrollStudent(
                                 studentCombo.getValue().getId(),
                                 subjectCombo.getValue().getId(),
+                                teacherId,
                                 academicYearField.getText().trim(),
-                                semesterCombo.getValue());
+                                semesterCombo.getValue()
+                        );
 
                         // Actualizar fecha de inscripción si es diferente a la actual
                         LocalDate selectedDate = enrollmentDatePicker.getValue();

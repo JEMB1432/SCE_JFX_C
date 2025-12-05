@@ -22,7 +22,10 @@ public class EnrollmentController {
         this.subjectDAO = new SubjectDAO();
     }
 
-    public Enrollment enrollStudent(String studentId, String subjectId, String academicYear, int semester) {
+    public Enrollment enrollStudent(
+            String studentId, String subjectId,
+            String teacherId, String academicYear,
+            int semester) {
         // Validar estudiante
         Optional<Student> studentOpt = studentDAO.findById(studentId);
         if (studentOpt.isEmpty()) {
@@ -63,6 +66,7 @@ public class EnrollmentController {
         }
 
         Enrollment enrollment = new Enrollment(studentId, subjectId, academicYear, semester);
+        enrollment.setTeacherId(teacherId); // Asignar el profesor
         enrollment.setEnrollmentDate(LocalDate.now());
         enrollment.setStatus("enrolled");
 
@@ -112,6 +116,20 @@ public class EnrollmentController {
     // Obtener inscripciones por estado
     public List<Enrollment> getEnrollmentsByStatus(String status) {
         return enrollmentDAO.findByStatus(status);
+    }
+
+    // Obtener inscripciones por profesor y materia
+    public List<Enrollment> getEnrollmentsByTeacherAndSubject(String teacherId, String subjectId) {
+        return enrollmentDAO.findByTeacherAndSubject(teacherId, subjectId);
+    }
+
+    // Obtener inscripciones por profesor, materia, año académico y semestre
+    public List<Enrollment> getEnrollmentsByTeacherSubjectYearSemester(
+            String teacherId, String subjectId, String academicYear, int semester) {
+        if (semester < 1) {
+            throw new IllegalArgumentException("El semestre debe ser mayor a 0");
+        }
+        return enrollmentDAO.findByTeacherSubjectYearSemester(teacherId, subjectId, academicYear, semester);
     }
 
     // Actualizar inscripción

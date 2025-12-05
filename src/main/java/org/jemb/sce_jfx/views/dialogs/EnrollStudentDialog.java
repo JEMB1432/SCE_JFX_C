@@ -12,6 +12,7 @@ import org.jemb.sce_jfx.controllers.StudentController;
 import org.jemb.sce_jfx.models.Enrollment;
 import org.jemb.sce_jfx.models.Student;
 import org.jemb.sce_jfx.models.TeacherSubject;
+import org.jemb.sce_jfx.utils.UserSession;
 
 import java.util.List;
 
@@ -197,10 +198,14 @@ public class EnrollStudentDialog extends Dialog<Enrollment> {
         }
 
         try {
+            // Obtener teacherId del usuario actual
+            String teacherId = UserSession.getInstance().getCurrentUser().getId();
+
             // Inscribir estudiante usando el controller
             Enrollment enrollment = enrollmentController.enrollStudent(
                     selectedStudent.getId(),
                     teacherSubject.getSubjectId(),
+                    teacherId,
                     teacherSubject.getAcademicYear(),
                     teacherSubject.getSemester());
 

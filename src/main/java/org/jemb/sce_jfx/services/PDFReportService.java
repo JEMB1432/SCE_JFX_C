@@ -49,14 +49,12 @@ public class PDFReportService {
         // Encabezado
         addHeader(document, teacherSubject, teacher);
 
-        // Obtener inscripciones
-        List<Enrollment> enrollments = enrollmentController.getEnrollmentsBySubject(teacherSubject.getSubjectId());
-
-        // Filtrar por periodo
-        List<Enrollment> filteredEnrollments = enrollments.stream()
-                .filter(e -> e.getAcademicYear().equals(teacherSubject.getAcademicYear()) &&
-                        e.getSemester() == teacherSubject.getSemester())
-                .toList();
+        // Obtener inscripciones filtradas por profesor
+        List<Enrollment> enrollments = enrollmentController.getEnrollmentsByTeacherSubjectYearSemester(
+                teacher.getId(),
+                teacherSubject.getSubjectId(),
+                teacherSubject.getAcademicYear(),
+                teacherSubject.getSemester());
 
         // Obtener tipos de evaluación del profesor para esta materia
         List<EvaluationType> evaluationTypes = evaluationTypeController
@@ -65,10 +63,10 @@ public class PDFReportService {
                         teacher.getId());
 
         // Tabla de calificaciones
-        addGradesTable(document, filteredEnrollments, evaluationTypes);
+        addGradesTable(document, enrollments, evaluationTypes);
 
         // Estadísticas
-        addStatistics(document, filteredEnrollments, evaluationTypes);
+        addStatistics(document, enrollments, evaluationTypes);
 
         // Pie de página
         addFooter(document);

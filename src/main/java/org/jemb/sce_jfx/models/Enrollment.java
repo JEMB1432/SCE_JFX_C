@@ -8,6 +8,7 @@ public class Enrollment {
     private String id;
     private String studentId;
     private String subjectId;
+    private String teacherId; // ID del profesor asignado
     private String academicYear; // Formato: 2024-2025
     private int semester;
     private LocalDate enrollmentDate;
@@ -57,6 +58,14 @@ public class Enrollment {
 
     public void setSubjectId(String subjectId) {
         this.subjectId = subjectId;
+    }
+
+    public String getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(String teacherId) {
+        this.teacherId = teacherId;
     }
 
     public String getAcademicYear() {
@@ -142,6 +151,7 @@ public class Enrollment {
                 "id='" + id + '\'' +
                 ", studentId='" + studentId + '\'' +
                 ", subjectId='" + subjectId + '\'' +
+                ", teacherId='" + teacherId + '\'' +
                 ", academicYear='" + academicYear + '\'' +
                 ", semester=" + semester +
                 ", status='" + status + '\'' +

@@ -12,6 +12,13 @@ import java.util.stream.Collectors;
 public class PerformanceService {
 
     public List<StudentPerformanceData> getStudentPerformance(String studentId) {
+        return getStudentPerformanceByTeacher(studentId, null);
+    }
+
+    /**
+     * Obtiene el rendimiento de un estudiante filtrado por profesor
+     */
+    public List<StudentPerformanceData> getStudentPerformanceByTeacher(String studentId, String teacherId) {
         List<StudentPerformanceData> performanceList = new ArrayList<>();
 
         String sql = """
@@ -41,13 +48,22 @@ public class PerformanceService {
                     INNER JOIN grades g ON e.id = g.enrollment_id
                     INNER JOIN evaluation_types et ON g.evaluation_type_id = et.id
                     WHERE s.id = ? AND g.score IS NOT NULL
-                    ORDER BY e.academic_year DESC, e.semester DESC, sub.name, g.graded_at
                 """;
+
+        // Agregar filtro de profesor si se especifica
+        if (teacherId != null && !teacherId.trim().isEmpty()) {
+            sql += " AND e.teacher_id = ?";
+        }
+
+        sql += " ORDER BY e.academic_year DESC, e.semester DESC, sub.name, g.graded_at";
 
         try (Connection conn = DatabaseConfig.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, studentId);
+            if (teacherId != null && !teacherId.trim().isEmpty()) {
+                stmt.setString(2, teacherId);
+            }
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

@@ -288,7 +288,10 @@ public class GradesView extends HBox {
             return;
 
         try {
-            var enrollments = enrollmentController.getEnrollmentsBySubject(selectedSubject.getSubjectId());
+            // Obtener inscripciones filtradas por profesor y materia
+            var enrollments = enrollmentController.getEnrollmentsByTeacherAndSubject(
+                    currentUser.getId(),
+                    selectedSubject.getSubjectId());
 
             // Filtrar por periodo
             var filtered = enrollments.stream()
