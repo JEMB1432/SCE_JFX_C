@@ -6,6 +6,7 @@ import java.util.UUID;
 public class EvaluationType {
     private String id;
     private String subjectId;
+    private String teacherId; // ID del profesor que creó este tipo de evaluación
     private String name;
     private String description;
     private double weight; // Porcentaje que vale (0-100)
@@ -33,35 +34,93 @@ public class EvaluationType {
     }
 
     // Getters y Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getSubjectId() { return subjectId; }
-    public void setSubjectId(String subjectId) { this.subjectId = subjectId; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getSubjectId() {
+        return subjectId;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setSubjectId(String subjectId) {
+        this.subjectId = subjectId;
+    }
 
-    public double getWeight() { return weight; }
-    public void setWeight(double weight) { this.weight = weight; }
+    public String getTeacherId() {
+        return teacherId;
+    }
 
-    public double getMaxScore() { return maxScore; }
-    public void setMaxScore(double maxScore) { this.maxScore = maxScore; }
+    public void setTeacherId(String teacherId) {
+        this.teacherId = teacherId;
+    }
 
-    public Integer getEvaluationOrder() { return evaluationOrder; }
-    public void setEvaluationOrder(Integer evaluationOrder) { this.evaluationOrder = evaluationOrder; }
+    public String getName() {
+        return name;
+    }
 
-    public boolean isFinalExam() { return isFinalExam; }
-    public void setFinalExam(boolean finalExam) { isFinalExam = finalExam; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getDescription() {
+        return description;
+    }
 
-    public Subject getSubject() { return subject; }
-    public void setSubject(Subject subject) { this.subject = subject; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public double getMaxScore() {
+        return maxScore;
+    }
+
+    public void setMaxScore(double maxScore) {
+        this.maxScore = maxScore;
+    }
+
+    public Integer getEvaluationOrder() {
+        return evaluationOrder;
+    }
+
+    public void setEvaluationOrder(Integer evaluationOrder) {
+        this.evaluationOrder = evaluationOrder;
+    }
+
+    public boolean isFinalExam() {
+        return isFinalExam;
+    }
+
+    public void setFinalExam(boolean finalExam) {
+        isFinalExam = finalExam;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 
     // Métodos utilitarios
     public String getWeightPercentage() {
@@ -77,6 +136,7 @@ public class EvaluationType {
         return "EvaluationType{" +
                 "id='" + id + '\'' +
                 ", subjectId='" + subjectId + '\'' +
+                ", teacherId='" + teacherId + '\'' +
                 ", name='" + name + '\'' +
                 ", weight=" + weight +
                 ", isFinalExam=" + isFinalExam +

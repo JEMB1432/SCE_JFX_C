@@ -36,10 +36,10 @@ public class PDFReportService {
      * Genera un reporte PDF de calificaciones de una materia
      */
     public File generateSubjectGradesReport(TeacherSubject teacherSubject, User teacher) throws FileNotFoundException {
-        String fileName = "Reporte_" + teacherSubject.getSubject().getSubjectCode() + "_" 
+        String fileName = "Reporte_" + teacherSubject.getSubject().getSubjectCode() + "_"
                 + teacherSubject.getAcademicYear() + "_Sem" + teacherSubject.getSemester() + "_"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".pdf";
-        
+
         File file = new File(fileName);
         PdfWriter writer = new PdfWriter(file);
         PdfDocument pdf = new PdfDocument(writer);
@@ -51,16 +51,18 @@ public class PDFReportService {
 
         // Obtener inscripciones
         List<Enrollment> enrollments = enrollmentController.getEnrollmentsBySubject(teacherSubject.getSubjectId());
-        
+
         // Filtrar por periodo
         List<Enrollment> filteredEnrollments = enrollments.stream()
                 .filter(e -> e.getAcademicYear().equals(teacherSubject.getAcademicYear()) &&
                         e.getSemester() == teacherSubject.getSemester())
                 .toList();
 
-        // Obtener tipos de evaluación
+        // Obtener tipos de evaluación del profesor para esta materia
         List<EvaluationType> evaluationTypes = evaluationTypeController
-                .getEvaluationTypesBySubject(teacherSubject.getSubjectId());
+                .getEvaluationTypesBySubjectAndTeacher(
+                        teacherSubject.getSubjectId(),
+                        teacher.getId());
 
         // Tabla de calificaciones
         addGradesTable(document, filteredEnrollments, evaluationTypes);
@@ -84,8 +86,8 @@ public class PDFReportService {
         document.add(title);
 
         Paragraph subjectInfo = new Paragraph(
-                "Materia: " + teacherSubject.getSubject().getName() + 
-                " (" + teacherSubject.getSubject().getSubjectCode() + ")")
+                "Materia: " + teacherSubject.getSubject().getName() +
+                        " (" + teacherSubject.getSubject().getSubjectCode() + ")")
                 .setFontSize(14)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setMarginBottom(5);
@@ -106,8 +108,8 @@ public class PDFReportService {
         document.add(teacherInfo);
     }
 
-    private void addGradesTable(Document document, List<Enrollment> enrollments, 
-                                List<EvaluationType> evaluationTypes) {
+    private void addGradesTable(Document document, List<Enrollment> enrollments,
+            List<EvaluationType> evaluationTypes) {
         if (enrollments.isEmpty()) {
             Paragraph noData = new Paragraph("No hay estudiantes inscritos en esta materia.")
                     .setFontSize(12)
@@ -119,7 +121,7 @@ public class PDFReportService {
 
         // Calcular número de columnas: Código, Nombre, Evaluaciones, Nota Final
         int numColumns = 2 + evaluationTypes.size() + 1;
-        
+
         // Crear array dinámico de anchos de columna
         float[] columnWidths = new float[numColumns];
         columnWidths[0] = 1.0f; // Código
@@ -128,7 +130,7 @@ public class PDFReportService {
             columnWidths[i] = 1.2f; // Evaluaciones
         }
         columnWidths[numColumns - 1] = 1.0f; // Nota Final
-        
+
         Table table = new Table(UnitValue.createPercentArray(columnWidths))
                 .useAllAvailableWidth()
                 .setMarginTop(20);
@@ -138,14 +140,14 @@ public class PDFReportService {
                 .setPadding(8)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setBold();
-        
+
         table.addHeaderCell(headerCell.clone(false).add(new Paragraph("Código")));
         table.addHeaderCell(headerCell.clone(false).add(new Paragraph("Estudiante")));
-        
+
         for (EvaluationType evalType : evaluationTypes) {
             table.addHeaderCell(headerCell.clone(false).add(new Paragraph(evalType.getName())));
         }
-        
+
         table.addHeaderCell(headerCell.clone(false).add(new Paragraph("Nota Final")));
 
         // Filas de datos
@@ -160,8 +162,8 @@ public class PDFReportService {
             // Calificaciones por tipo de evaluación
             for (EvaluationType evalType : evaluationTypes) {
                 Grade grade = findGrade(enrollment.getId(), evalType.getId());
-                String score = grade != null && grade.getScore() != null 
-                        ? String.format("%.2f", grade.getScore()) 
+                String score = grade != null && grade.getScore() != null
+                        ? String.format("%.2f", grade.getScore())
                         : "-";
                 table.addCell(new Cell().setPadding(5)
                         .setTextAlignment(TextAlignment.CENTER)
@@ -187,8 +189,8 @@ public class PDFReportService {
         document.add(table);
     }
 
-    private void addStatistics(Document document, List<Enrollment> enrollments, 
-                              List<EvaluationType> evaluationTypes) {
+    private void addStatistics(Document document, List<Enrollment> enrollments,
+            List<EvaluationType> evaluationTypes) {
         if (enrollments.isEmpty()) {
             return;
         }
@@ -225,7 +227,7 @@ public class PDFReportService {
         double averageGrade = studentsWithGrades > 0 ? totalFinalGrade / studentsWithGrades : 0;
 
         // Tabla de estadísticas
-        Table statsTable = new Table(UnitValue.createPercentArray(new float[]{1, 1}))
+        Table statsTable = new Table(UnitValue.createPercentArray(new float[] { 1, 1 }))
                 .useAllAvailableWidth()
                 .setMarginTop(10);
 
@@ -234,7 +236,7 @@ public class PDFReportService {
         addStatRow(statsTable, "Promedio General", String.format("%.2f", averageGrade));
         addStatRow(statsTable, "Aprobados (≥70)", String.valueOf(passed));
         addStatRow(statsTable, "Reprobados (<70)", String.valueOf(failed));
-        addStatRow(statsTable, "Tasa de Aprobación", 
+        addStatRow(statsTable, "Tasa de Aprobación",
                 studentsWithGrades > 0 ? String.format("%.1f%%", (passed * 100.0 / studentsWithGrades)) : "0%");
 
         document.add(statsTable);
@@ -270,4 +272,3 @@ public class PDFReportService {
         }
     }
 }
-

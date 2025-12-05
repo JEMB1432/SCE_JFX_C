@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import org.jemb.sce_jfx.controllers.EvaluationTypeController;
 import org.jemb.sce_jfx.models.EvaluationType;
 import org.jemb.sce_jfx.models.TeacherSubject;
+import org.jemb.sce_jfx.utils.UserSession;
 
 import java.util.Optional;
 
@@ -201,7 +202,10 @@ public class EvaluationTypesDialog extends Dialog<ButtonType> {
 
     private void loadEvaluationTypes() {
         try {
-            var types = evaluationTypeController.getEvaluationTypesBySubject(teacherSubject.getSubjectId());
+            String teacherId = UserSession.getInstance().getCurrentUser().getId();
+            var types = evaluationTypeController.getEvaluationTypesBySubjectAndTeacher(
+                    teacherSubject.getSubjectId(),
+                    teacherId);
             typesList.setAll(types);
             updateWeightDisplay();
         } catch (Exception e) {
@@ -212,7 +216,10 @@ public class EvaluationTypesDialog extends Dialog<ButtonType> {
 
     private void updateWeightDisplay() {
         try {
-            double totalWeight = evaluationTypeController.getTotalWeightBySubject(teacherSubject.getSubjectId());
+            String teacherId = UserSession.getInstance().getCurrentUser().getId();
+            double totalWeight = evaluationTypeController.getTotalWeightBySubjectAndTeacher(
+                    teacherSubject.getSubjectId(),
+                    teacherId);
             weightProgressBar.setProgress(totalWeight / 100.0);
             weightLabel.setText(String.format("%.2f%% de 100%%", totalWeight));
 

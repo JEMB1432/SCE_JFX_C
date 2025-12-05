@@ -97,8 +97,8 @@ public class StudentFormDialog extends Dialog<Student> {
         col2.setPercentWidth(50);
         formGrid.getColumnConstraints().addAll(col1, col2);
 
-        VBox codeSection = createLabeledField("Código de Estudiante *",
-                studentCodeField = createTextField("Ej: EST001"),
+        VBox codeSection = createLabeledField("Matricula *",
+                studentCodeField = createTextField("Ej: 20243DS0"),
                 studentCodeError = createErrorLabel());
         formGrid.add(codeSection, 0, 0);
 

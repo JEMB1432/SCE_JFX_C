@@ -18,7 +18,7 @@ public class EvaluationTypeController {
     }
 
     // Crear tipo de evaluación
-    public EvaluationType createEvaluationType(String subjectId, String name, double weight) {
+    public EvaluationType createEvaluationType(String subjectId, String name, double weight, String teacherId) {
         // Validar materia
         Optional<Subject> subjectOpt = subjectDAO.findById(subjectId);
         if (subjectOpt.isEmpty()) {
@@ -30,22 +30,22 @@ public class EvaluationTypeController {
             throw new IllegalArgumentException("El peso debe estar entre 0 y 100");
         }
 
-        // Verificar que el peso total no exceda 100%
-        double currentTotal = evaluationTypeDAO.getTotalWeightBySubjectId(subjectId);
+        // Verificar que el peso total no exceda 100% para este profesor específico
+        double currentTotal = evaluationTypeDAO.getTotalWeightBySubjectIdAndTeacherId(subjectId, teacherId);
         if (currentTotal + weight > 100) {
             throw new IllegalArgumentException(
-                String.format("El peso total excedería 100%%. Peso actual: %.2f%%, nuevo peso: %.2f%%", 
-                    currentTotal, weight)
-            );
+                    String.format("El peso total excedería 100%%. Peso actual: %.2f%%, nuevo peso: %.2f%%",
+                            currentTotal, weight));
         }
 
         EvaluationType evaluationType = new EvaluationType(subjectId, name, weight);
+        evaluationType.setTeacherId(teacherId);
         EvaluationType saved = evaluationTypeDAO.save(evaluationType);
-        
+
         if (saved == null) {
             throw new RuntimeException("Error al crear el tipo de evaluación");
         }
-        
+
         return saved;
     }
 
@@ -67,6 +67,14 @@ public class EvaluationTypeController {
         return evaluationTypeDAO.findBySubjectId(subjectId);
     }
 
+    // Obtener tipos de evaluación por materia y profesor
+    public List<EvaluationType> getEvaluationTypesBySubjectAndTeacher(String subjectId, String teacherId) {
+        if (!subjectDAO.existsById(subjectId)) {
+            throw new IllegalArgumentException("La materia no existe");
+        }
+        return evaluationTypeDAO.findBySubjectIdAndTeacherId(subjectId, teacherId);
+    }
+
     // Obtener examen final de una materia
     public Optional<EvaluationType> getFinalExamBySubject(String subjectId) {
         if (!subjectDAO.existsById(subjectId)) {
@@ -75,12 +83,12 @@ public class EvaluationTypeController {
         return evaluationTypeDAO.findFinalExamBySubjectId(subjectId);
     }
 
-    // Obtener peso total de una materia
-    public double getTotalWeightBySubject(String subjectId) {
+    // Obtener peso total de una materia para un profesor específico
+    public double getTotalWeightBySubjectAndTeacher(String subjectId, String teacherId) {
         if (!subjectDAO.existsById(subjectId)) {
             throw new IllegalArgumentException("La materia no existe");
         }
-        return evaluationTypeDAO.getTotalWeightBySubjectId(subjectId);
+        return evaluationTypeDAO.getTotalWeightBySubjectIdAndTeacherId(subjectId, teacherId);
     }
 
     // Actualizar tipo de evaluación
@@ -101,16 +109,18 @@ public class EvaluationTypeController {
             throw new IllegalArgumentException("El peso debe estar entre 0 y 100");
         }
 
-        // Verificar que el peso total no exceda 100% (excluyendo el actual)
+        // Verificar que el peso total no exceda 100% (excluyendo el actual) para este
+        // profesor
         EvaluationType existing = existingOpt.get();
-        double currentTotal = evaluationTypeDAO.getTotalWeightBySubjectId(evaluationType.getSubjectId());
+        double currentTotal = evaluationTypeDAO.getTotalWeightBySubjectIdAndTeacherId(
+                evaluationType.getSubjectId(),
+                evaluationType.getTeacherId());
         double newTotal = currentTotal - existing.getWeight() + evaluationType.getWeight();
-        
+
         if (newTotal > 100) {
             throw new IllegalArgumentException(
-                String.format("El peso total excedería 100%%. Peso total actual: %.2f%%, nuevo total: %.2f%%", 
-                    currentTotal, newTotal)
-            );
+                    String.format("El peso total excedería 100%%. Peso total actual: %.2f%%, nuevo total: %.2f%%",
+                            currentTotal, newTotal));
         }
 
         // Validar puntuación máxima
@@ -119,11 +129,11 @@ public class EvaluationTypeController {
         }
 
         EvaluationType updated = evaluationTypeDAO.update(evaluationType);
-        
+
         if (updated == null) {
             throw new RuntimeException("Error al actualizar el tipo de evaluación");
         }
-        
+
         return updated;
     }
 
@@ -132,8 +142,7 @@ public class EvaluationTypeController {
         if (!evaluationTypeDAO.findById(id).isPresent()) {
             throw new IllegalArgumentException("El tipo de evaluación no existe");
         }
-        
+
         evaluationTypeDAO.delete(id);
     }
 }
-

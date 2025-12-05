@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import org.jemb.sce_jfx.controllers.EvaluationTypeController;
 import org.jemb.sce_jfx.models.EvaluationType;
 import org.jemb.sce_jfx.models.TeacherSubject;
+import org.jemb.sce_jfx.utils.UserSession;
 
 /**
  * Formulario para agregar o editar un tipo de evaluación
@@ -184,15 +185,13 @@ public class EvaluationTypeFormDialog extends Dialog<EvaluationType> {
 
             if (evaluationType == null) {
                 // Crear nuevo
-                EvaluationType newType = new EvaluationType(teacherSubject.getSubjectId(), name, weight);
-                newType.setMaxScore(maxScore);
-                newType.setEvaluationOrder(order);
-                newType.setFinalExam(isFinal);
+                String teacherId = UserSession.getInstance().getCurrentUser().getId();
 
                 EvaluationType saved = controller.createEvaluationType(
                         teacherSubject.getSubjectId(),
                         name,
-                        weight);
+                        weight,
+                        teacherId);
 
                 // Actualizar campos adicionales
                 saved.setMaxScore(maxScore);

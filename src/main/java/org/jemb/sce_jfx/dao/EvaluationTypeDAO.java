@@ -70,8 +70,10 @@ public class EvaluationTypeDAO implements GenericDAO<EvaluationType, String> {
 
     @Override
     public EvaluationType save(EvaluationType evaluationType) {
-        String sql = "INSERT INTO " + TABLE_NAME + " (id, subject_id, name, description, weight, max_score, evaluation_order, is_final_exam, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO " + TABLE_NAME
+                + " (id, subject_id, teacher_id, name, description, weight, max_score, evaluation_order, is_final_exam, created_at) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -82,13 +84,14 @@ public class EvaluationTypeDAO implements GenericDAO<EvaluationType, String> {
 
             stmt.setString(1, evaluationType.getId());
             stmt.setString(2, evaluationType.getSubjectId());
-            stmt.setString(3, evaluationType.getName());
-            DatabaseUtils.setNullableParameter(stmt, 4, evaluationType.getDescription());
-            stmt.setDouble(5, evaluationType.getWeight());
-            stmt.setDouble(6, evaluationType.getMaxScore());
-            DatabaseUtils.setNullableParameter(stmt, 7, evaluationType.getEvaluationOrder());
-            stmt.setBoolean(8, evaluationType.isFinalExam());
-            stmt.setTimestamp(9, DatabaseUtils.toSqlTimestamp(evaluationType.getCreatedAt()));
+            DatabaseUtils.setNullableParameter(stmt, 3, evaluationType.getTeacherId());
+            stmt.setString(4, evaluationType.getName());
+            DatabaseUtils.setNullableParameter(stmt, 5, evaluationType.getDescription());
+            stmt.setDouble(6, evaluationType.getWeight());
+            stmt.setDouble(7, evaluationType.getMaxScore());
+            DatabaseUtils.setNullableParameter(stmt, 8, evaluationType.getEvaluationOrder());
+            stmt.setBoolean(9, evaluationType.isFinalExam());
+            stmt.setTimestamp(10, DatabaseUtils.toSqlTimestamp(evaluationType.getCreatedAt()));
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -107,7 +110,8 @@ public class EvaluationTypeDAO implements GenericDAO<EvaluationType, String> {
 
     @Override
     public EvaluationType update(EvaluationType evaluationType) {
-        String sql = "UPDATE " + TABLE_NAME + " SET subject_id = ?, name = ?, description = ?, weight = ?, max_score = ?, evaluation_order = ?, is_final_exam = ? WHERE id = ?";
+        String sql = "UPDATE " + TABLE_NAME
+                + " SET subject_id = ?, teacher_id = ?, name = ?, description = ?, weight = ?, max_score = ?, evaluation_order = ?, is_final_exam = ? WHERE id = ?";
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -117,13 +121,14 @@ public class EvaluationTypeDAO implements GenericDAO<EvaluationType, String> {
             stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, evaluationType.getSubjectId());
-            stmt.setString(2, evaluationType.getName());
-            DatabaseUtils.setNullableParameter(stmt, 3, evaluationType.getDescription());
-            stmt.setDouble(4, evaluationType.getWeight());
-            stmt.setDouble(5, evaluationType.getMaxScore());
-            DatabaseUtils.setNullableParameter(stmt, 6, evaluationType.getEvaluationOrder());
-            stmt.setBoolean(7, evaluationType.isFinalExam());
-            stmt.setString(8, evaluationType.getId());
+            DatabaseUtils.setNullableParameter(stmt, 2, evaluationType.getTeacherId());
+            stmt.setString(3, evaluationType.getName());
+            DatabaseUtils.setNullableParameter(stmt, 4, evaluationType.getDescription());
+            stmt.setDouble(5, evaluationType.getWeight());
+            stmt.setDouble(6, evaluationType.getMaxScore());
+            DatabaseUtils.setNullableParameter(stmt, 7, evaluationType.getEvaluationOrder());
+            stmt.setBoolean(8, evaluationType.isFinalExam());
+            stmt.setString(9, evaluationType.getId());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -190,6 +195,42 @@ public class EvaluationTypeDAO implements GenericDAO<EvaluationType, String> {
         return evaluationTypes;
     }
 
+    /**
+     * Encuentra tipos de evaluación filtrados por materia Y profesor
+     * 
+     * @param subjectId ID de la materia
+     * @param teacherId ID del profesor
+     * @return Lista de tipos de evaluación del profesor para esa materia
+     */
+    public List<EvaluationType> findBySubjectIdAndTeacherId(String subjectId, String teacherId) {
+        List<EvaluationType> evaluationTypes = new ArrayList<>();
+        String sql = "SELECT * FROM " + TABLE_NAME
+                + " WHERE subject_id = ? AND teacher_id = ? ORDER BY evaluation_order, name";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseConfig.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, subjectId);
+            stmt.setString(2, teacherId);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                evaluationTypes.add(mapResultSetToEvaluationType(rs, true));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding evaluation types by subject and teacher: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            DatabaseUtils.closeQuietly(rs, stmt, conn);
+        }
+
+        return evaluationTypes;
+    }
+
     public Optional<EvaluationType> findFinalExamBySubjectId(String subjectId) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE subject_id = ? AND is_final_exam = TRUE LIMIT 1";
 
@@ -243,11 +284,49 @@ public class EvaluationTypeDAO implements GenericDAO<EvaluationType, String> {
         return 0.0;
     }
 
+    /**
+     * Calcula el peso total de tipos de evaluación para un profesor específico en
+     * una materia
+     * 
+     * @param subjectId ID de la materia
+     * @param teacherId ID del profesor
+     * @return Peso total (suma de todos los pesos)
+     */
+    public double getTotalWeightBySubjectIdAndTeacherId(String subjectId, String teacherId) {
+        String sql = "SELECT SUM(weight) as total_weight FROM " + TABLE_NAME
+                + " WHERE subject_id = ? AND teacher_id = ?";
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DatabaseConfig.getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, subjectId);
+            stmt.setString(2, teacherId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                double total = rs.getDouble("total_weight");
+                return rs.wasNull() ? 0.0 : total;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error calculating total weight by subject and teacher: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            DatabaseUtils.closeQuietly(rs, stmt, conn);
+        }
+
+        return 0.0;
+    }
+
     // Mapeo de ResultSet a EvaluationType
     private EvaluationType mapResultSetToEvaluationType(ResultSet rs, boolean loadRelations) throws SQLException {
         EvaluationType evaluationType = new EvaluationType();
         evaluationType.setId(rs.getString("id"));
         evaluationType.setSubjectId(rs.getString("subject_id"));
+        evaluationType.setTeacherId(rs.getString("teacher_id"));
         evaluationType.setName(rs.getString("name"));
         evaluationType.setDescription(rs.getString("description"));
         evaluationType.setWeight(rs.getDouble("weight"));
@@ -269,4 +348,3 @@ public class EvaluationTypeDAO implements GenericDAO<EvaluationType, String> {
         return evaluationType;
     }
 }
-

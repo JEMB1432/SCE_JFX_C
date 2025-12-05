@@ -157,9 +157,12 @@ public class GradesView extends HBox {
         selectedSubject = subject;
         subjectTitleLabel.setText(subject.getSubject().getName());
 
-        // Cargar evaluation types de la materia
+        // Cargar evaluation types de la materia para este profesor
         try {
-            evaluationTypes = evaluationTypeController.getEvaluationTypesBySubject(subject.getSubjectId());
+            String teacherId = currentUser.getId();
+            evaluationTypes = evaluationTypeController.getEvaluationTypesBySubjectAndTeacher(
+                    subject.getSubjectId(),
+                    teacherId);
         } catch (Exception e) {
             evaluationTypes = List.of();
             showError("Error al cargar tipos de evaluación: " + e.getMessage());
@@ -178,13 +181,13 @@ public class GradesView extends HBox {
         studentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Columna: Código de Estudiante
-        TableColumn<Enrollment, String> codeCol = new TableColumn<>("CÓDIGO");
+        TableColumn<Enrollment, String> codeCol = new TableColumn<>("MATRICULA");
         codeCol.setCellValueFactory(data -> {
             Enrollment enrollment = data.getValue();
             return new javafx.beans.property.SimpleStringProperty(
                     enrollment.getStudent() != null ? enrollment.getStudent().getStudentCode() : "N/A");
         });
-        codeCol.setPrefWidth(100);
+        codeCol.setPrefWidth(70);
 
         // Columna: Nombre del Estudiante
         TableColumn<Enrollment, String> nameCol = new TableColumn<>("ESTUDIANTE");
@@ -193,7 +196,7 @@ public class GradesView extends HBox {
             return new javafx.beans.property.SimpleStringProperty(
                     enrollment.getStudent() != null ? enrollment.getStudent().getFullName() : "N/A");
         });
-        nameCol.setPrefWidth(200);
+        nameCol.setPrefWidth(130);
 
         studentsTable.getColumns().addAll(codeCol, nameCol);
 
