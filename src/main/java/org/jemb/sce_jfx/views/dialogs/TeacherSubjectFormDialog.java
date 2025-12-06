@@ -114,9 +114,9 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
                 academicYearError = createErrorLabel());
         formGrid.add(yearSection, 0, 2);
 
-        // Semestre
-        VBox semesterSection = createLabeledField("Semestre *",
-                semesterField = createTextField("Ej: 1, 2, 3..."),
+        // Semestre (automático y deshabilitado)
+        VBox semesterSection = createLabeledField("Semestre (automático)",
+                semesterField = createSemesterField(),
                 semesterError = createErrorLabel());
         formGrid.add(semesterSection, 0, 3);
 
@@ -133,7 +133,8 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
                 new Separator(),
                 formGrid);
 
-        Label noteLabel = new Label("* Campos obligatorios");
+        Label noteLabel = new Label("* Campos obligatorios\n" +
+                "El semestre se establece automáticamente según la materia seleccionada");
         noteLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #6b7280; -fx-font-style: italic;");
         formContainer.getChildren().add(noteLabel);
 
@@ -158,6 +159,17 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
         field.setPromptText(prompt);
         field.getStyleClass().add("form-field");
         field.setPrefHeight(35);
+        return field;
+    }
+
+    private TextField createSemesterField() {
+        TextField field = new TextField();
+        field.setPromptText("Se establece automáticamente");
+        field.getStyleClass().add("form-field");
+        field.setPrefHeight(35);
+        field.setEditable(false);
+        field.setDisable(true);
+        field.setStyle("-fx-opacity: 0.7; -fx-background-color: #f0f0f0;");
         return field;
     }
 
@@ -207,10 +219,16 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
         // Cargar solo materias activas
         List<Subject> activeSubjects = subjectController.getAllSubjects().stream()
                 .filter(Subject::isActive)
+                .sorted((s1, s2) -> {
+                    // Ordenar por semestre disponible para mejor visualización
+                    Integer sem1 = s1.getSemesterAvailable() != null ? s1.getSemesterAvailable() : 999;
+                    Integer sem2 = s2.getSemesterAvailable() != null ? s2.getSemesterAvailable() : 999;
+                    return sem1.compareTo(sem2);
+                })
                 .collect(Collectors.toList());
         combo.getItems().addAll(activeSubjects);
 
-        // Configurar cómo se muestra la materia
+        // Configurar cómo se muestra la materia (con semestre)
         combo.setButtonCell(new ListCell<Subject>() {
             @Override
             protected void updateItem(Subject subject, boolean empty) {
@@ -218,7 +236,10 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
                 if (empty || subject == null) {
                     setText(null);
                 } else {
-                    setText(subject.getName() + " (" + subject.getSubjectCode() + ")");
+                    String semesterInfo = subject.getSemesterAvailable() != null
+                            ? " - Sem: " + subject.getSemesterAvailable()
+                            : " - Sin semestre asignado";
+                    setText(subject.getName() + " (" + subject.getSubjectCode() + ")" + semesterInfo);
                 }
             }
         });
@@ -230,7 +251,10 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
                 if (empty || subject == null) {
                     setText(null);
                 } else {
-                    setText(subject.getName() + " (" + subject.getSubjectCode() + ")");
+                    String semesterInfo = subject.getSemesterAvailable() != null
+                            ? " - Sem: " + subject.getSemesterAvailable()
+                            : " - Sin semestre asignado";
+                    setText(subject.getName() + " (" + subject.getSubjectCode() + ")" + semesterInfo);
                 }
             }
         });
@@ -264,9 +288,33 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
 
     private void setupValidation() {
         teacherCombo.valueProperty().addListener((obs, oldVal, newVal) -> validateTeacher());
-        subjectCombo.valueProperty().addListener((obs, oldVal, newVal) -> validateSubject());
+
+        subjectCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            validateSubject();
+            updateSemesterField();
+        });
+
         academicYearField.textProperty().addListener((obs, oldVal, newVal) -> validateAcademicYear());
-        semesterField.textProperty().addListener((obs, oldVal, newVal) -> validateSemester());
+    }
+
+    private void updateSemesterField() {
+        Subject selectedSubject = subjectCombo.getValue();
+
+        if (selectedSubject == null) {
+            semesterField.clear();
+            semesterField.setPromptText("Seleccione una materia primero");
+            return;
+        }
+
+        Integer semesterAvailable = selectedSubject.getSemesterAvailable();
+
+        if (semesterAvailable != null) {
+            semesterField.setText(String.valueOf(semesterAvailable));
+        } else {
+            // Si la materia no tiene semestre definido
+            semesterField.setText("1");
+            showWarning("La materia seleccionada no tiene semestre definido. Se asignará el semestre 1 por defecto.");
+        }
     }
 
     private boolean validateTeacher() {
@@ -323,7 +371,7 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
         String semesterText = semesterField.getText().trim();
 
         if (semesterText.isEmpty()) {
-            showError(semesterField, semesterError, "El semestre es obligatorio");
+            showError(semesterField, semesterError, "El semestre es obligatorio (se establece automáticamente)");
             return false;
         }
 
@@ -363,6 +411,14 @@ public class TeacherSubjectFormDialog extends Dialog<TeacherSubject> {
         errorLabel.setText("");
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+    }
+
+    private void showWarning(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void setupResult() {
