@@ -25,7 +25,8 @@ public class EnrollmentController {
     public Enrollment enrollStudent(
             String studentId, String subjectId,
             String teacherId, String academicYear,
-            int semester) {
+            int semester
+    ) {
         // Validar estudiante
         Optional<Student> studentOpt = studentDAO.findById(studentId);
         if (studentOpt.isEmpty()) {
@@ -78,7 +79,7 @@ public class EnrollmentController {
         }
 
         Enrollment enrollment = new Enrollment(studentId, subjectId, academicYear, semester);
-        enrollment.setTeacherId(teacherId); // Asignar el profesor
+        enrollment.setTeacherId(teacherId);
         enrollment.setEnrollmentDate(LocalDate.now());
         enrollment.setStatus("enrolled");
 
@@ -154,17 +155,17 @@ public class EnrollmentController {
 
         Enrollment existing = existingOpt.get();
 
-        // Validar estudiante si cambió
+        // Validar si cambió el estudiante
         if (!studentDAO.existsById(enrollment.getStudentId())) {
             throw new IllegalArgumentException("El estudiante no existe");
         }
 
-        // Validar materia si cambió
+        // Validar si cambió la materia
         if (!subjectDAO.existsById(enrollment.getSubjectId())) {
             throw new IllegalArgumentException("La materia no existe");
         }
 
-        // Validar formato de año académico
+        // Validar el formato de año académico
         if (enrollment.getAcademicYear() != null && !isValidAcademicYear(enrollment.getAcademicYear())) {
             throw new IllegalArgumentException(
                     "Formato de año académico inválido. Use el formato: YYYY-YYYY con años consecutivos");

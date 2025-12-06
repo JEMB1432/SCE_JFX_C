@@ -58,8 +58,8 @@ public class ProfileView extends VBox {
                     getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
                     getClass().getResource("/org/jemb/sce_jfx/styles/common/buttons.css").toExternalForm(),
                     getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
-                    getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm(),
-                    getClass().getResource("/org/jemb/sce_jfx/styles/profile.css").toExternalForm());
+                    getClass().getResource("/org/jemb/sce_jfx/styles/admin.css").toExternalForm()
+            );
         } catch (Exception e) {
             System.err.println("Error cargando estilos: " + e.getMessage());
         }

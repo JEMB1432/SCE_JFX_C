@@ -49,7 +49,9 @@ public class PerformanceChartsView extends VBox {
 
         getStylesheets().addAll(
                 getClass().getResource("/org/jemb/sce_jfx/styles/common/base.css").toExternalForm(),
-                getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm()
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/forms.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/common/tabs.css").toExternalForm(),
+                getClass().getResource("/org/jemb/sce_jfx/styles/components/dialogs.css").toExternalForm()
         );
 
         setPadding(new Insets(30));
